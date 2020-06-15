@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "dontdropit",
+  "version": "${version}",
+  "name": "Don't Drop It!",
+  "description": "Prevents accidental dropping of items by delaying the drop until the \"drop\" key is held down for 3 seconds.",
+  "authors": [
+    "ADudeCalledLeo"
+  ],
+  "contributors": [],
+  "contact": {
+    "homepage": "https://curseforge.com/minecraft/mc-mods/dont-drop-it",
+    "sources": "https://github.com/Leo40Git/DontDropIt"
+  },
+  "license": "MIT",
+  "icon": "assets/dontdropit/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "main": [],
+    "client": [
+      "adudecalledleo.dontdropit.DontDropItMod"
+    ],
+    "server": []
+  },
+  "mixins": [
+    "dontdropit.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.4.0",
+    "fabric": "*"
+  }
+}
