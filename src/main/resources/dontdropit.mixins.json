@@ -2,9 +2,10 @@
   "required": true,
   "package": "adudecalledleo.dontdropit.mixin",
   "compatibilityLevel": "JAVA_8",
-  "mixins": [],
-  "client": [],
-  "server": [],
+  "client": [
+    "MixinClientPlayerEntity_DisableDropKey",
+    "MixinContainerScreen_DoDropDelay"
+  ],
   "injectors": {
     "defaultRequire": 1
   }

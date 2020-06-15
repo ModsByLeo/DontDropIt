@@ -16,11 +16,9 @@
   "icon": "assets/dontdropit/icon.png",
   "environment": "client",
   "entrypoints": {
-    "main": [],
     "client": [
       "adudecalledleo.dontdropit.DontDropItMod"
-    ],
-    "server": []
+    ]
   },
   "mixins": [
     "dontdropit.mixins.json"
