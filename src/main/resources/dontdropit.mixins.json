@@ -4,7 +4,8 @@
   "compatibilityLevel": "JAVA_8",
   "client": [
     "MixinClientPlayerEntity_DisableDropKey",
-    "MixinContainerScreen_DoDropDelay"
+    "MixinContainerScreen_DoDropDelay",
+    "MixinInGameHud_RenderDropProgress"
   ],
   "injectors": {
     "defaultRequire": 1

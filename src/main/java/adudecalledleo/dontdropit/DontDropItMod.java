@@ -17,8 +17,7 @@ public class DontDropItMod implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         log(Level.INFO, "Initializing client");
-        ClientTickCallback.EVENT.register(DropKeyHandler::onClientTick);
-        HudRenderCallback.EVENT.register(DropAlertRenderer::onHudRender);
+        ClientTickCallback.EVENT.register(DropHandler::onClientTick);
     }
 
     public static void log(Level level, String message){

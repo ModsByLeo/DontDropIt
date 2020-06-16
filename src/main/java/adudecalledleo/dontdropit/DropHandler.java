@@ -5,17 +5,19 @@ import adudecalledleo.dontdropit.api.ContainerScreenExtensions;
 import adudecalledleo.dontdropit.api.DefaultDropHandlerInterface;
 import adudecalledleo.dontdropit.api.DropHandlerInterface;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.MathHelper;
 
-public class DropKeyHandler {
-    private static DropKeyHandler instance;
+public class DropHandler {
+    private static DropHandler instance;
 
-    private DropKeyHandler() { }
+    private DropHandler() { }
 
     public static void onClientTick(MinecraftClient mc, DropHandlerInterface dhi) {
         if (instance == null)
-            instance = new DropKeyHandler();
+            instance = new DropHandler();
         instance.tick(mc, dhi);
     }
 
@@ -55,11 +57,6 @@ public class DropKeyHandler {
     public void tick(MinecraftClient mc, DropHandlerInterface dhi) {
         if (dhi.isDropKeyDown(mc)) {
             if (dropDelayCounter < getDropDelayTicks()) {
-                ItemStack stack = dhi.getCurrentStack(mc);
-                if (stack.isEmpty() || (dropDelayCounter > 0 && stack != currentStack)) {
-                    dropDelayCounter = 0;
-                    return;
-                }
                 if (dropDelayCounter == 0)
                     controlWasDown = Screen.hasControlDown();
                 else
@@ -67,6 +64,11 @@ public class DropKeyHandler {
                         dropDelayCounter = 0;
                         return;
                     }
+                ItemStack stack = dhi.getCurrentStack(mc);
+                if (stack.isEmpty() || !dhi.canDropStack(stack, mc) || (dropDelayCounter > 0 && stack != currentStack)) {
+                    dropDelayCounter = 0;
+                    return;
+                }
                 currentStack = stack;
                 dropDelayCounter++;
             } else {
@@ -75,5 +77,13 @@ public class DropKeyHandler {
             }
         } else
             dropDelayCounter = 0;
+    }
+
+    public static void renderSlotUnderlay(int x, int y, int w, int h) {
+        if (isDroppingEntireStack())
+            DrawableHelper.fill(x, y, x + w, y + h, 0x40FF0000);
+        int counter = getTickCounter();
+        int sH = MathHelper.floor((counter / (float) getDropDelayTicks()) * h);
+        DrawableHelper.fill(x, y + h - sH, x + w, y + h, 0x8000FF00);
     }
 }
