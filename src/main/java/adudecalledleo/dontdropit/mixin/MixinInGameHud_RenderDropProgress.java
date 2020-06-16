@@ -1,6 +1,7 @@
 package adudecalledleo.dontdropit.mixin;
 
 import adudecalledleo.dontdropit.DropHandler;
+import adudecalledleo.dontdropit.config.ModConfigHolder;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
@@ -23,6 +24,8 @@ public abstract class MixinInGameHud_RenderDropProgress extends DrawableHelper {
     @Inject(method = "renderHotbarItem", at = @At(value = "INVOKE",
             target = "Lnet/minecraft/client/render/item/ItemRenderer;renderGuiItem(Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/item/ItemStack;II)V"))
     public void dontdropit$renderDropProgress(int i, int j, float f, PlayerEntity playerEntity, ItemStack itemStack, CallbackInfo ci) {
+        if (!ModConfigHolder.getConfig().dropDelay.enabled)
+            return;
         if (InputUtil.isKeyPressed(client.getWindow().getHandle(),
                 KeyBindingHelper.getBoundKeyOf(client.options.keyDrop).getKeyCode())) {
             if (itemStack == playerEntity.inventory.getMainHandStack()) {

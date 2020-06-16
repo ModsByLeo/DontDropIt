@@ -3,7 +3,7 @@
   "id": "dontdropit",
   "version": "${version}",
   "name": "Don't Drop It!",
-  "description": "Prevents accidental dropping of items by delaying the drop until the \"drop\" key is held down for 3 seconds.",
+  "description": "Prevents accidental dropping of items via various means.",
   "authors": [
     "ADudeCalledLeo"
   ],
@@ -18,6 +18,9 @@
   "entrypoints": {
     "client": [
       "adudecalledleo.dontdropit.DontDropItMod"
+    ],
+    "modmenu":[
+      "adudecalledleo.dontdropit.compat.ModMenuApiImpl"
     ]
   },
   "mixins": [
@@ -26,5 +29,8 @@
   "depends": {
     "fabricloader": ">=0.4.0",
     "fabric": "*"
+  },
+  "custom": {
+    "modmenu:clientsideOnly": true
   }
 }

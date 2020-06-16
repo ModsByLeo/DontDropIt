@@ -4,6 +4,7 @@ import adudecalledleo.dontdropit.api.ContainerScreenDropHandlerInterface;
 import adudecalledleo.dontdropit.api.ContainerScreenExtensions;
 import adudecalledleo.dontdropit.api.DefaultDropHandlerInterface;
 import adudecalledleo.dontdropit.api.DropHandlerInterface;
+import adudecalledleo.dontdropit.config.ModConfigHolder;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
@@ -34,7 +35,7 @@ public class DropHandler {
     }
 
     public static int getDropDelayTicks() {
-        return DROP_DELAY_TICKS;
+        return ModConfigHolder.getConfig().dropDelay.ticks;
     }
 
     public static int getTickCounter() {
@@ -49,12 +50,13 @@ public class DropHandler {
         return instance.controlWasDown;
     }
 
-    private static final int DROP_DELAY_TICKS = 10;
     private int dropDelayCounter = 0;
     private ItemStack currentStack = ItemStack.EMPTY;
     private boolean controlWasDown = false;
 
     public void tick(MinecraftClient mc, DropHandlerInterface dhi) {
+        if (!ModConfigHolder.getConfig().dropDelay.enabled)
+            return;
         if (dhi.isDropKeyDown(mc)) {
             if (dropDelayCounter < getDropDelayTicks()) {
                 if (dropDelayCounter == 0)

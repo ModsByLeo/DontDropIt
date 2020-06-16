@@ -1,8 +1,7 @@
 package adudecalledleo.dontdropit;
 
+import adudecalledleo.dontdropit.config.ModConfigHolder;
 import net.fabricmc.api.ClientModInitializer;
-
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.event.client.ClientTickCallback;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -16,8 +15,9 @@ public class DontDropItMod implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        log(Level.INFO, "Initializing client");
+        ModConfigHolder.loadConfig();
         ClientTickCallback.EVENT.register(DropHandler::onClientTick);
+        log(Level.INFO, "Don't drop the diamond pickaxe!");
     }
 
     public static void log(Level level, String message){
