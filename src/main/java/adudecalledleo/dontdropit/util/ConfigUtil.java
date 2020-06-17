@@ -3,7 +3,9 @@ package adudecalledleo.dontdropit.util;
 import adudecalledleo.dontdropit.config.ModConfigHolder;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
@@ -12,6 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class ConfigUtil {
@@ -51,8 +54,12 @@ public class ConfigUtil {
         return checkIdList(idList, Registry.ENCHANTMENT, "dontdropit.config.favorites.enchantments.error.bad_id");
     }
 
+    public static <T> List<T> getAllFromRegistry(List<String> idList, Function<Identifier, T> registryGetter) {
+        return idList.stream().map(id -> registryGetter.apply(new Identifier(id))).collect(Collectors.toList());
+    }
+
     public static <T> List<T> getAllFromRegistry(List<String> idList, Registry<T> registry) {
-        return idList.stream().map(id -> registry.get(new Identifier(id))).collect(Collectors.toList());
+        return getAllFromRegistry(idList, registry::get);
     }
 
     public static boolean isStackFavorite(ItemStack stack) {
@@ -60,7 +67,10 @@ public class ConfigUtil {
             return false;
         if (ModConfigHolder.getFavoriteItems().contains(stack.getItem()))
             return true;
-        return !Collections.disjoint(ModConfigHolder.getFavoriteEnchantments(),
-                EnchantmentHelper.getEnchantments(stack).keySet());
+        if (!Collections.disjoint(ModConfigHolder.getFavoriteEnchantments(),
+                EnchantmentHelper.getEnchantments(stack).keySet()))
+            return true;
+        List<Tag<Item>> favoriteTags = ModConfigHolder.getFavoriteTags();
+        return favoriteTags.stream().anyMatch(tag -> tag.contains(stack.getItem()));
     }
 }

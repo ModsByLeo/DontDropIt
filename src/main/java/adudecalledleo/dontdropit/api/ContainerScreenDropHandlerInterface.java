@@ -2,6 +2,7 @@ package adudecalledleo.dontdropit.api;
 
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.container.Slot;
@@ -28,7 +29,7 @@ public class ContainerScreenDropHandlerInterface implements DropHandlerInterface
     @Override
     public ItemStack getCurrentStack(MinecraftClient mc) {
         Slot focusedSlot = cse.getFocusedSlot();
-        if (focusedSlot == null || !focusedSlot.hasStack())
+        if (focusedSlot == null || focusedSlot instanceof CreativeInventoryScreen.LockableSlot || !focusedSlot.hasStack())
             return ItemStack.EMPTY;
         return focusedSlot.getStack();
     }

@@ -5,8 +5,14 @@ import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 
+import java.util.function.Function;
+
 public class ModConfigGui {
     private static final ModConfig DEFAULTS = new ModConfig();
+
+    @SuppressWarnings("rawtypes")
+    private static final Function<Enum, String> OOB_DROP_CLICK_OVERRIDE_NAME_PROVIDER = anEnum ->
+        "dontdropit.config.general.oob_click_drop_behavior." + anEnum.name().toLowerCase();
 
     public static ConfigBuilder getConfigBuilder() {
         final ModConfig cfg = ModConfigHolder.getConfig();
@@ -14,9 +20,11 @@ public class ModConfigGui {
         ConfigEntryBuilder eb = cb.entryBuilder();
         cb.setSavingRunnable(ModConfigHolder::saveConfig);
         ConfigCategory cGeneral = cb.getOrCreateCategory("dontdropit.config.category.general");
-        cGeneral.addEntry(eb.startBooleanToggle("dontdropit.config.general.disable_oob_click_drop", cfg.general.disableOOBClickDrop)
-                                    .setSaveConsumer(value -> cfg.general.disableOOBClickDrop = value)
-                                    .setDefaultValue(DEFAULTS.general.disableOOBClickDrop).build());
+        cGeneral.addEntry(eb.startEnumSelector("dontdropit.config.general.oob_click_drop_behavior",
+                ModConfig.General.OOBClickDropOverride.class, cfg.general.oobDropClickOverride)
+                                    .setSaveConsumer(value -> cfg.general.oobDropClickOverride = value)
+                                    .setEnumNameProvider(OOB_DROP_CLICK_OVERRIDE_NAME_PROVIDER)
+                                    .setDefaultValue(DEFAULTS.general.oobDropClickOverride).build());
         ConfigCategory cDropDelay = cb.getOrCreateCategory("dontdropit.config.category.drop_delay");
         cDropDelay.addEntry(eb.startBooleanToggle("dontdropit.config.drop_delay.enabled", cfg.dropDelay.enabled)
                                     .setSaveConsumer(value -> cfg.dropDelay.enabled = value)
@@ -36,6 +44,9 @@ public class ModConfigGui {
                                     .setSaveConsumer(ConfigUtil.makeListSaveConsumer(cfg.favorites.enchantments))
                                     .setErrorSupplier(ConfigUtil::checkEnchantmentIdList)
                                     .setDefaultValue(DEFAULTS.favorites.enchantments).build());
+        cFavorites.addEntry(eb.startStrList("dontdropit.config.favorites.tags", cfg.favorites.tags)
+                                    .setSaveConsumer(ConfigUtil.makeListSaveConsumer(cfg.favorites.tags))
+                                    .setDefaultValue(DEFAULTS.favorites.tags).build());
         return cb;
     }
 }

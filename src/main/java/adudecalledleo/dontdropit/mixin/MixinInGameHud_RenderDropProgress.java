@@ -24,7 +24,6 @@ public abstract class MixinInGameHud_RenderDropProgress extends DrawableHelper {
             shift = At.Shift.AFTER))
     public void dontdropit$renderDropProgress(int i, int j, float f, PlayerEntity playerEntity, ItemStack itemStack, CallbackInfo ci) {
         RenderSystem.disableDepthTest();
-        RenderSystem.colorMask(true, true, true, false);
         RenderSystem.pushMatrix();
         RenderSystem.translatef(0, 0, getBlitOffset());
         RenderSystem.enableBlend();
@@ -32,16 +31,18 @@ public abstract class MixinInGameHud_RenderDropProgress extends DrawableHelper {
         RenderSystem.disableBlend();
         if (!ModConfigHolder.getConfig().dropDelay.enabled) {
             RenderSystem.enableDepthTest();
-            RenderSystem.colorMask(true, true, true, true);
             RenderSystem.popMatrix();
             return;
         }
         if (client.options.keyDrop.isPressed()) {
-            if (itemStack == playerEntity.inventory.getMainHandStack())
+            if (itemStack == playerEntity.inventory.getMainHandStack()) {
+                RenderSystem.translatef(0, 0, 1);
+                RenderSystem.colorMask(true, true, true, false);
                 DropHandler.renderSlotProgressOverlay(itemStack, i, j, 16, 16);
+                RenderSystem.colorMask(true, true, true, true);
+            }
         }
         RenderSystem.enableDepthTest();
-        RenderSystem.colorMask(true, true, true, true);
         RenderSystem.popMatrix();
 
     }

@@ -13,7 +13,11 @@ public class ModConfig {
     }
 
     public static class General {
-        public boolean disableOOBClickDrop = true;
+        public enum OOBClickDropOverride {
+            FAVORITE_ITEMS, ALL_ITEMS, DISABLED
+        }
+
+        public OOBClickDropOverride oobDropClickOverride = OOBClickDropOverride.FAVORITE_ITEMS;
     }
 
     public General general;
@@ -29,11 +33,13 @@ public class ModConfig {
         public Favorites() {
             items = new LinkedList<>();
             enchantments = new LinkedList<>(ConfigUtil.getAllEnchantmentIds());
+            tags = new LinkedList<>();
         }
 
         public boolean enabled = true;
         public List<String> items;
         public List<String> enchantments;
+        public List<String> tags;
     }
 
     public Favorites favorites;
