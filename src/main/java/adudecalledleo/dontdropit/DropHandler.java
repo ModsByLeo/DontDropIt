@@ -60,30 +60,37 @@ public class DropHandler {
     private boolean controlWasDown = false;
 
     public void tick(MinecraftClient mc, DropHandlerInterface dhi) {
-        if (!ModConfigHolder.getConfig().dropDelay.enabled)
-            return;
-        if (dhi.isKeyDown(mc.options.keyDrop, mc)) {
-            if (dropDelayCounter < getDropDelayTicks()) {
-                if (dropDelayCounter == 0)
-                    controlWasDown = Screen.hasControlDown();
-                else
-                    if (controlWasDown != Screen.hasControlDown()) {
+        if (ModConfigHolder.getConfig().dropDelay.enabled) {
+            if (dhi.isKeyDown(mc.options.keyDrop, mc)) {
+                if (dropDelayCounter < getDropDelayTicks()) {
+                    ItemStack stack = dhi.getCurrentStack(mc);
+                    if (dropDelayCounter == 0)
+                        controlWasDown = Screen.hasControlDown() && stack.getCount() > 1;
+                    else if (controlWasDown != Screen.hasControlDown() && stack.getCount() > 1) {
+                            dropDelayCounter = 0;
+                            return;
+                        }
+                    if (stack.isEmpty() || !dhi.canDropStack(stack, mc) || (dropDelayCounter > 0 && stack != currentStack)) {
                         dropDelayCounter = 0;
                         return;
                     }
-                ItemStack stack = dhi.getCurrentStack(mc);
-                if (stack.isEmpty() || !dhi.canDropStack(stack, mc) || (dropDelayCounter > 0 && stack != currentStack)) {
+                    currentStack = stack;
+                    dropDelayCounter++;
+                } else {
                     dropDelayCounter = 0;
-                    return;
+                    dhi.drop(controlWasDown, mc);
                 }
-                currentStack = stack;
-                dropDelayCounter++;
-            } else {
+            } else
                 dropDelayCounter = 0;
-                dhi.drop(controlWasDown, mc);
+        } else {
+            // 1. use the KeyBinding directly so we don't drop twice in ContainerScreens (KeyBindings aren't updated in Screens)
+            // 2. use wasPressed() instead of isPressed() so we only drop an item once per tap
+            if (mc.options.keyDrop.wasPressed()) {
+                ItemStack stack = dhi.getCurrentStack(mc);
+                if (dhi.canDropStack(stack, mc))
+                    dhi.drop(Screen.hasControlDown(), mc);
             }
-        } else
-            dropDelayCounter = 0;
+        }
     }
 
     private static final Identifier TEX_FAVORITE = new Identifier(DontDropItMod.MOD_ID, "textures/gui/favorite.png");
@@ -104,11 +111,11 @@ public class DropHandler {
                 KeyBindingHelper.getBoundKeyOf(DontDropItMod.keyForceDrop).getKeyCode())
           && ConfigUtil.isStackFavorite(stack))
             return;
-        if (isDroppingEntireStack())
-            DrawableHelper.fill(x, y, x + w, y + h, 0x40FF0000);
+        if (stack.getCount() > 1 && isDroppingEntireStack())
+            DrawableHelper.fill(x, y, x + w, y + h, 0x20FF0000);
         int counter = getTickCounter();
         int sH = MathHelper.floor((counter / (float) getDropDelayTicks()) * h);
-        DrawableHelper.fill(x, y + h - sH, x + w, y + h, 0x8000FF00);
+        DrawableHelper.fill(x, y + h - sH, x + w, y + h, 0x4000FF00);
     }
 
     public static void renderSlotProgressOverlay(Slot slot) {

@@ -13,7 +13,7 @@ public interface DropHandlerInterface {
     ItemStack getCurrentStack(MinecraftClient mc);
     void drop(boolean entireStack, MinecraftClient mc);
     default boolean canDropStack(ItemStack stack, MinecraftClient mc) {
-        if (stack.getItem() instanceof ArmorItem && EnchantmentHelper.hasBindingCurse(stack))
+        if (!mc.player.isCreative() && stack.getItem() instanceof ArmorItem && EnchantmentHelper.hasBindingCurse(stack))
             for (ItemStack armorStack : mc.player.getArmorItems())
                 if (stack == armorStack)
                     return false;

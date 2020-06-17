@@ -3,7 +3,7 @@
   "package": "adudecalledleo.dontdropit.mixin",
   "compatibilityLevel": "JAVA_8",
   "client": [
-    "MixinClientPlayerEntity_DisableDropKey",
+    "MixinMinecraftClient_DisableDropKey",
     "MixinContainerScreen_DoDropDelay",
     "MixinInGameHud_RenderDropProgress"
   ],
