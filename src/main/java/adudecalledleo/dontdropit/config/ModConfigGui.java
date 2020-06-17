@@ -1,5 +1,6 @@
 package adudecalledleo.dontdropit.config;
 
+import adudecalledleo.dontdropit.util.ConfigUtil;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
@@ -13,17 +14,24 @@ public class ModConfigGui {
         ConfigEntryBuilder eb = cb.entryBuilder();
         cb.setSavingRunnable(ModConfigHolder::saveConfig); // TODO validation
         ConfigCategory cDropDelay = cb.getOrCreateCategory("dontdropit.config.category.drop_delay");
-        cDropDelay.addEntry(eb.startBooleanToggle("dontdropit.config.enabled", cfg.dropDelay.enabled)
+        cDropDelay.addEntry(eb.startBooleanToggle("dontdropit.config.drop_delay.enabled", cfg.dropDelay.enabled)
+                                    .setSaveConsumer(value -> cfg.dropDelay.enabled = value)
                                     .setDefaultValue(DEFAULTS.dropDelay.enabled).build());
         cDropDelay.addEntry(eb.startIntSlider("dontdropit.config.drop_delay.ticks", cfg.dropDelay.ticks, 5, 100)
+                                    .setSaveConsumer(value -> cfg.dropDelay.ticks = value)
                                     .setDefaultValue(DEFAULTS.dropDelay.ticks).build());
-        ConfigCategory cDropBlock = cb.getOrCreateCategory("dontdropit.config.category.drop_block");
-        cDropBlock.addEntry(eb.startBooleanToggle("dontdropit.config.enabled", cfg.dropBlock.enabled)
-                                    .setDefaultValue(DEFAULTS.dropBlock.enabled).build());
-        cDropBlock.addEntry(eb.startBooleanToggle("dontdropit.config.drop_block.enchanted", cfg.dropBlock.enchanted)
-                                    .setDefaultValue(DEFAULTS.dropBlock.enchanted).build());
-        cDropBlock.addEntry(eb.startBooleanToggle("dontdropit.config.drop_block.cursed", cfg.dropBlock.cursed)
-                                    .setDefaultValue(DEFAULTS.dropBlock.cursed).build());
+        ConfigCategory cFavorites = cb.getOrCreateCategory("dontdropit.config.category.favorites");
+        cFavorites.addEntry(eb.startBooleanToggle("dontdropit.config.favorites.enabled", cfg.favorites.enabled)
+                                    .setSaveConsumer(value -> cfg.favorites.enabled = value)
+                                    .setDefaultValue(DEFAULTS.favorites.enabled).build());
+        cFavorites.addEntry(eb.startStrList("dontdropit.config.favorites.items", cfg.favorites.items)
+                                    .setSaveConsumer(ConfigUtil.makeListSaveConsumer(cfg.favorites.items))
+                                    .setErrorSupplier(ConfigUtil::checkItemIdList)
+                                    .setDefaultValue(DEFAULTS.favorites.items).build());
+        cFavorites.addEntry(eb.startStrList("dontdropit.config.favorites.enchantments", cfg.favorites.enchantments)
+                                    .setSaveConsumer(ConfigUtil.makeListSaveConsumer(cfg.favorites.enchantments))
+                                    .setErrorSupplier(ConfigUtil::checkEnchantmentIdList)
+                                    .setDefaultValue(DEFAULTS.favorites.enchantments).build());
         return cb;
     }
 }
