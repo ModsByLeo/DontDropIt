@@ -24,7 +24,7 @@ public class DontDropItMod implements ClientModInitializer {
         ModConfigHolder.loadConfig();
         KeyBindingHelper.registerKeyBinding(keyForceDrop);
         ClientTickCallback.EVENT.register(DropHandler::onClientTick);
-        log(Level.INFO, "Don't drop the diamond pickaxe!");
+        log(Level.INFO, "Don't drop that Diamond Pickaxe!");
     }
 
     public static void log(Level level, String message){
