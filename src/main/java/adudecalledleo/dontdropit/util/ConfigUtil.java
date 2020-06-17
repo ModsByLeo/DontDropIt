@@ -69,7 +69,7 @@ public class ConfigUtil {
         if (ModConfigHolder.getFavoriteItems().contains(stack.getItem()))
             return true;
         if (!Collections.disjoint(ModConfigHolder.getFavoriteEnchantments(),
-                EnchantmentHelper.getEnchantments(stack).keySet()))
+                EnchantmentHelper.get(stack).keySet()))
             return true;
         List<Tag<Item>> favoriteTags = ModConfigHolder.getFavoriteTags();
         return favoriteTags.stream().anyMatch(tag -> tag.contains(stack.getItem()));

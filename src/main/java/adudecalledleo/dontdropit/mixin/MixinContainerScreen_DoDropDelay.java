@@ -8,13 +8,13 @@ import adudecalledleo.dontdropit.util.ConfigUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ingame.ContainerScreen;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
+import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.container.Slot;
-import net.minecraft.container.SlotActionType;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.screen.slot.Slot;
+import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.Formatting;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -29,7 +29,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import java.util.ArrayList;
 import java.util.List;
 
-@Mixin(ContainerScreen.class)
+@Mixin(HandledScreen.class)
 public abstract class MixinContainerScreen_DoDropDelay extends Screen implements ContainerScreenExtensions {
     protected MixinContainerScreen_DoDropDelay() {
         super(null);
@@ -56,7 +56,7 @@ public abstract class MixinContainerScreen_DoDropDelay extends Screen implements
                     break;
             case ALL_ITEMS:
                 if (InputUtil.isKeyPressed(minecraft.getWindow().getHandle(),
-                        KeyBindingHelper.getBoundKeyOf(DontDropItMod.keyForceDrop).getKeyCode()))
+                        KeyBindingHelper.getBoundKeyOf(DontDropItMod.keyForceDrop).getCode()))
                     break;
                 ci.cancel();
                 break;
@@ -80,7 +80,7 @@ public abstract class MixinContainerScreen_DoDropDelay extends Screen implements
     @SuppressWarnings("rawtypes")
     @Redirect(method = "keyPressed", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/ingame/ContainerScreen;onMouseClick(Lnet/minecraft/container/Slot;IILnet/minecraft/container/SlotActionType;)V",
             ordinal = 1))
-    public void dontdropit$disableDropKey(ContainerScreen containerScreen, Slot slot, int invSlot, int button, SlotActionType slotActionType) {
+    public void dontdropit$disableDropKey(HandledScreen containerScreen, Slot slot, int invSlot, int button, SlotActionType slotActionType) {
         if (slot instanceof CreativeInventoryScreen.LockableSlot || !ModConfigHolder.getConfig().dropDelay.enabled)
             dontdropit$onMouseClick(slot, invSlot, button, slotActionType);
     }
@@ -93,7 +93,7 @@ public abstract class MixinContainerScreen_DoDropDelay extends Screen implements
         if (slot instanceof CreativeInventoryScreen.LockableSlot || !ModConfigHolder.getConfig().dropDelay.enabled)
             return;
         if (InputUtil.isKeyPressed(minecraft.getWindow().getHandle(),
-                KeyBindingHelper.getBoundKeyOf(minecraft.options.keyDrop).getKeyCode())) {
+                KeyBindingHelper.getBoundKeyOf(minecraft.options.keyDrop).getCode())) {
             RenderSystem.pushMatrix();
             RenderSystem.translatef(0, 0, getBlitOffset() + 1);
             DropHandler.renderSlotProgressOverlay(slot);
@@ -109,7 +109,7 @@ public abstract class MixinContainerScreen_DoDropDelay extends Screen implements
             boolean blocked = false;
             if (!(((Object) this) instanceof CreativeInventoryScreen)) {
                 blocked = !InputUtil.isKeyPressed(minecraft.getWindow().getHandle(),
-                    KeyBindingHelper.getBoundKeyOf(DontDropItMod.keyForceDrop).getKeyCode());
+                    KeyBindingHelper.getBoundKeyOf(DontDropItMod.keyForceDrop).getCode());
                 switch (ModConfigHolder.getConfig().general.oobDropClickOverride) {
                 case FAVORITE_ITEMS:
                     if (ConfigUtil.isStackFavorite(playerInventory.getCursorStack()))
@@ -122,7 +122,7 @@ public abstract class MixinContainerScreen_DoDropDelay extends Screen implements
             List<String> tooltipText = new ArrayList<>();
             if (blocked) {
                 tooltipText.add(Formatting.RED.toString() + Formatting.BOLD.toString() + I18n.translate("dontdropit.tooltip.drop.blocked"));
-                tooltipText.add(Formatting.GRAY.toString() + I18n.translate("dontdropit.tooltip.drop.unblock_hint", DontDropItMod.keyForceDrop.getLocalizedName()));
+                tooltipText.add(Formatting.GRAY.toString() + I18n.translate("dontdropit.tooltip.drop.unblock_hint", DontDropItMod.keyForceDrop.getBoundKeyLocalizedText()));
             } else
                 tooltipText.add(I18n.translate("dontdropit.tooltip.drop.allowed"));
             renderTooltip(tooltipText, mouseX, mouseY);

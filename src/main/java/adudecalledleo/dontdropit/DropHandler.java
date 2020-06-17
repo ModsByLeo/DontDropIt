@@ -11,8 +11,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.container.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
@@ -103,12 +103,12 @@ public class DropHandler {
     }
 
     public static void renderSlotFavoriteIcon(Slot slot) {
-        renderSlotFavoriteIcon(slot.getStack(), slot.xPosition, slot.yPosition);
+        renderSlotFavoriteIcon(slot.getStack(), slot.x, slot.y);
     }
 
     public static void renderSlotProgressOverlay(ItemStack stack, int x, int y, int w, int h) {
         if (!InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(),
-                KeyBindingHelper.getBoundKeyOf(DontDropItMod.keyForceDrop).getKeyCode())
+                KeyBindingHelper.getBoundKeyOf(DontDropItMod.keyForceDrop).getCode())
           && ConfigUtil.isStackFavorite(stack))
             return;
         if (stack.getCount() > 1 && isDroppingEntireStack())
@@ -119,6 +119,6 @@ public class DropHandler {
     }
 
     public static void renderSlotProgressOverlay(Slot slot) {
-        renderSlotProgressOverlay(slot.getStack(), slot.xPosition, slot.yPosition, 16, 16);
+        renderSlotProgressOverlay(slot.getStack(), slot.x, slot.y, 16, 16);
     }
 }

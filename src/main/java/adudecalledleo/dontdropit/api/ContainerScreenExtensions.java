@@ -1,6 +1,6 @@
 package adudecalledleo.dontdropit.api;
 
-import net.minecraft.container.Slot;
+import net.minecraft.screen.slot.Slot;
 
 public interface ContainerScreenExtensions {
     Slot getFocusedSlot();

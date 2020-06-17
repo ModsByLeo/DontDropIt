@@ -27,7 +27,7 @@ public class DefaultDropHandlerInterface implements DropHandlerInterface {
     public void drop(boolean entireStack, MinecraftClient mc) {
         PlayerActionC2SPacket.Action action = entireStack ? PlayerActionC2SPacket.Action.DROP_ALL_ITEMS : PlayerActionC2SPacket.Action.DROP_ITEM;
         mc.player.networkHandler.sendPacket(new PlayerActionC2SPacket(action, BlockPos.ORIGIN, Direction.DOWN));
-        boolean doSwingAnim = mc.player.inventory.takeInvStack(mc.player.inventory.selectedSlot,
+        boolean doSwingAnim = mc.player.inventory.removeStack(mc.player.inventory.selectedSlot,
                 entireStack && !mc.player.getMainHandStack().isEmpty() ? mc.player.getMainHandStack().getCount() : 1)
                                        != ItemStack.EMPTY;
         if (doSwingAnim)
