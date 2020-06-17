@@ -1,3 +1,6 @@
 {
+  "dontdropit.tooltip.drop.blocked": "Can't drop this item!",
+  "dontdropit.tooltip.drop.unblock_hint": "Hold %s to allow dropping this item",
+  "dontdropit.tooltip.drop.allowed": "Click to drop item",
   "dontdropit.config.title": "Don't Drop It!"
 }

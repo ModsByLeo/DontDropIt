@@ -17,6 +17,6 @@ public interface DropHandlerInterface {
             for (ItemStack armorStack : mc.player.getArmorItems())
                 if (stack == armorStack)
                     return false;
-        return isKeyDown(DontDropItMod.keyFavoriteOverride, mc) || !ConfigUtil.isStackFavorite(stack);
+        return isKeyDown(DontDropItMod.keyForceDrop, mc) || !ConfigUtil.isStackFavorite(stack);
     }
 }

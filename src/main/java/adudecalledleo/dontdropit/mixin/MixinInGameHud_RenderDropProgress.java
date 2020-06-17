@@ -27,7 +27,7 @@ public abstract class MixinInGameHud_RenderDropProgress extends DrawableHelper {
         RenderSystem.pushMatrix();
         RenderSystem.translatef(0, 0, getBlitOffset());
         RenderSystem.enableBlend();
-        DropHandler.renderSlotFavoriteIcon(itemStack, i, j, 16, 16);
+        DropHandler.renderSlotFavoriteIcon(itemStack, i, j);
         RenderSystem.disableBlend();
         if (!ModConfigHolder.getConfig().dropDelay.enabled) {
             RenderSystem.enableDepthTest();

@@ -27,6 +27,7 @@ public class ConfigUtil {
 
     private static List<String> enchIds;
 
+    @SuppressWarnings("ConstantConditions")
     public static List<String> getAllEnchantmentIds() {
         if (enchIds == null) {
             enchIds = new LinkedList<>();

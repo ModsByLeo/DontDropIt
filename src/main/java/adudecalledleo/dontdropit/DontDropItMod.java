@@ -16,13 +16,13 @@ public class DontDropItMod implements ClientModInitializer {
 
     public static Logger LOGGER = LogManager.getLogger(MOD_NAME);
 
-    public static KeyBinding keyFavoriteOverride = new KeyBinding("key.dontdropit.favoriteOverride",
+    public static KeyBinding keyForceDrop = new KeyBinding("key.dontdropit.forceDrop",
             GLFW.GLFW_KEY_LEFT_ALT, "key.categories.inventory");
 
     @Override
     public void onInitializeClient() {
         ModConfigHolder.loadConfig();
-        KeyBindingHelper.registerKeyBinding(keyFavoriteOverride);
+        KeyBindingHelper.registerKeyBinding(keyForceDrop);
         ClientTickCallback.EVENT.register(DropHandler::onClientTick);
         log(Level.INFO, "Don't drop the diamond pickaxe!");
     }

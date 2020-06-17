@@ -16,11 +16,13 @@ public class DefaultDropHandlerInterface implements DropHandlerInterface {
         return keyBinding.isPressed();
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     public ItemStack getCurrentStack(MinecraftClient mc) {
         return mc.player.getMainHandStack();
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     public void drop(boolean entireStack, MinecraftClient mc) {
         PlayerActionC2SPacket.Action action = entireStack ? PlayerActionC2SPacket.Action.DROP_ALL_ITEMS : PlayerActionC2SPacket.Action.DROP_ITEM;

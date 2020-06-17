@@ -88,7 +88,7 @@ public class DropHandler {
 
     private static final Identifier TEX_FAVORITE = new Identifier(DontDropItMod.MOD_ID, "textures/gui/favorite.png");
 
-    public static void renderSlotFavoriteIcon(ItemStack stack, int x, int y, int w, int h) {
+    public static void renderSlotFavoriteIcon(ItemStack stack, int x, int y) {
         if (ConfigUtil.isStackFavorite(stack)) {
             MinecraftClient.getInstance().getTextureManager().bindTexture(TEX_FAVORITE);
             DrawableHelper.blit(x, y, 16, 16, 16, 16, 16, 16);
@@ -96,12 +96,12 @@ public class DropHandler {
     }
 
     public static void renderSlotFavoriteIcon(Slot slot) {
-        renderSlotFavoriteIcon(slot.getStack(), slot.xPosition, slot.yPosition, 16, 16);
+        renderSlotFavoriteIcon(slot.getStack(), slot.xPosition, slot.yPosition);
     }
 
     public static void renderSlotProgressOverlay(ItemStack stack, int x, int y, int w, int h) {
         if (!InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(),
-                KeyBindingHelper.getBoundKeyOf(DontDropItMod.keyFavoriteOverride).getKeyCode())
+                KeyBindingHelper.getBoundKeyOf(DontDropItMod.keyForceDrop).getKeyCode())
           && ConfigUtil.isStackFavorite(stack))
             return;
         if (isDroppingEntireStack())
