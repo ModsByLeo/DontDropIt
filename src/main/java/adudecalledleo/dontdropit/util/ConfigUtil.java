@@ -6,6 +6,8 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tag.Tag;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
@@ -38,20 +40,20 @@ public class ConfigUtil {
         return new LinkedList<>(enchIds);
     }
 
-    public static <T> Optional<String> checkIdList(List<String> idList, Registry<T> registry, String errI18n) {
+    public static <T> Optional<Text> checkIdList(List<String> idList, Registry<T> registry, String errI18n) {
         for (String id : idList) {
             Identifier idObj = new Identifier(id);
             if (!registry.containsId(idObj))
-                return Optional.of(I18n.translate(errI18n, id));
+                return Optional.of(new TranslatableText(errI18n, id));
         }
         return Optional.empty();
     }
 
-    public static Optional<String> checkItemIdList(List<String> idList) {
+    public static Optional<Text> checkItemIdList(List<String> idList) {
         return checkIdList(idList, Registry.ITEM, "dontdropit.config.favorites.items.error.bad_id");
     }
 
-    public static Optional<String> checkEnchantmentIdList(List<String> idList) {
+    public static Optional<Text> checkEnchantmentIdList(List<String> idList) {
         return checkIdList(idList, Registry.ENCHANTMENT, "dontdropit.config.favorites.enchantments.error.bad_id");
     }
 

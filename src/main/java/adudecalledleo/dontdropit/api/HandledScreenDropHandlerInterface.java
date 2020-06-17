@@ -8,15 +8,15 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
 
-public class ContainerScreenDropHandlerInterface implements DropHandlerInterface {
-    private final ContainerScreenExtensions cse;
+public class HandledScreenDropHandlerInterface implements DropHandlerInterface {
+    private final HandledScreenExtensions hse;
 
-    public ContainerScreenDropHandlerInterface(ContainerScreenExtensions cse) {
-        this.cse = cse;
+    public HandledScreenDropHandlerInterface(HandledScreenExtensions hse) {
+        this.hse = hse;
     }
 
-    public ContainerScreenExtensions getCse() {
-        return cse;
+    public HandledScreenExtensions getHse() {
+        return hse;
     }
 
     @Override
@@ -28,7 +28,7 @@ public class ContainerScreenDropHandlerInterface implements DropHandlerInterface
 
     @Override
     public ItemStack getCurrentStack(MinecraftClient mc) {
-        Slot focusedSlot = cse.getFocusedSlot();
+        Slot focusedSlot = hse.getFocusedSlot();
         if (focusedSlot == null || focusedSlot instanceof CreativeInventoryScreen.LockableSlot || !focusedSlot.hasStack())
             return ItemStack.EMPTY;
         return focusedSlot.getStack();
@@ -36,6 +36,6 @@ public class ContainerScreenDropHandlerInterface implements DropHandlerInterface
 
     @Override
     public void drop(boolean entireStack, MinecraftClient mc) {
-        cse.drop(entireStack);
+        hse.drop(entireStack);
     }
 }

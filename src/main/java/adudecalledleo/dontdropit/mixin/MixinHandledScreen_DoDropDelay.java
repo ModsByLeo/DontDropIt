@@ -2,7 +2,7 @@ package adudecalledleo.dontdropit.mixin;
 
 import adudecalledleo.dontdropit.DontDropItMod;
 import adudecalledleo.dontdropit.DropHandler;
-import adudecalledleo.dontdropit.api.ContainerScreenExtensions;
+import adudecalledleo.dontdropit.api.HandledScreenExtensions;
 import adudecalledleo.dontdropit.config.ModConfigHolder;
 import adudecalledleo.dontdropit.util.ConfigUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -10,11 +10,13 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -30,8 +32,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Mixin(HandledScreen.class)
-public abstract class MixinContainerScreen_DoDropDelay extends Screen implements ContainerScreenExtensions {
-    protected MixinContainerScreen_DoDropDelay() {
+public abstract class MixinHandledScreen_DoDropDelay extends Screen implements HandledScreenExtensions {
+    protected MixinHandledScreen_DoDropDelay() {
         super(null);
         throw new RuntimeException("This shouldn't be invoked...");
     }
@@ -55,7 +57,7 @@ public abstract class MixinContainerScreen_DoDropDelay extends Screen implements
                 if (!ConfigUtil.isStackFavorite(playerInventory.getCursorStack()))
                     break;
             case ALL_ITEMS:
-                if (InputUtil.isKeyPressed(minecraft.getWindow().getHandle(),
+                if (InputUtil.isKeyPressed(client.getWindow().getHandle(),
                         KeyBindingHelper.getBoundKeyOf(DontDropItMod.keyForceDrop).getCode()))
                     break;
                 ci.cancel();
@@ -78,7 +80,7 @@ public abstract class MixinContainerScreen_DoDropDelay extends Screen implements
     }
 
     @SuppressWarnings("rawtypes")
-    @Redirect(method = "keyPressed", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/ingame/ContainerScreen;onMouseClick(Lnet/minecraft/container/Slot;IILnet/minecraft/container/SlotActionType;)V",
+    @Redirect(method = "keyPressed", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/ingame/HandledScreen;onMouseClick(Lnet/minecraft/screen/slot/Slot;IILnet/minecraft/screen/slot/SlotActionType;)V",
             ordinal = 1))
     public void dontdropit$disableDropKey(HandledScreen containerScreen, Slot slot, int invSlot, int button, SlotActionType slotActionType) {
         if (slot instanceof CreativeInventoryScreen.LockableSlot || !ModConfigHolder.getConfig().dropDelay.enabled)
@@ -88,27 +90,27 @@ public abstract class MixinContainerScreen_DoDropDelay extends Screen implements
     @SuppressWarnings("ConstantConditions")
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;colorMask(ZZZZ)V",
             ordinal = 1), locals = LocalCapture.CAPTURE_FAILHARD)
-    public void dontdropit$renderDropProgress(int mouseX, int mouseY, float delta, CallbackInfo ci, int i, int j, int k,
-                                              int l, int m, Slot slot) {
+    public void dontdropit$renderDropProgress(MatrixStack matrices, int mouseX, int mouseY, float delta, CallbackInfo ci,
+                                              int i, int j, int k, int l, int m, Slot slot) {
         if (slot instanceof CreativeInventoryScreen.LockableSlot || !ModConfigHolder.getConfig().dropDelay.enabled)
             return;
-        if (InputUtil.isKeyPressed(minecraft.getWindow().getHandle(),
-                KeyBindingHelper.getBoundKeyOf(minecraft.options.keyDrop).getCode())) {
-            RenderSystem.pushMatrix();
-            RenderSystem.translatef(0, 0, getBlitOffset() + 1);
-            DropHandler.renderSlotProgressOverlay(slot);
-            RenderSystem.popMatrix();
+        if (InputUtil.isKeyPressed(client.getWindow().getHandle(),
+                KeyBindingHelper.getBoundKeyOf(client.options.keyDrop).getCode())) {
+            matrices.push();
+            matrices.translate(0, 0, getZOffset() + 1);
+            DropHandler.renderSlotProgressOverlay(matrices, slot);
+            matrices.pop();
         }
     }
 
     @SuppressWarnings("ConstantConditions")
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;enableDepthTest()V",
             ordinal = 1))
-    public void dontdropit$renderDropTooltip(int mouseX, int mouseY, float delta, CallbackInfo ci) {
+    public void dontdropit$renderDropTooltip(MatrixStack matrices, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         if (!playerInventory.getCursorStack().isEmpty() && dontdropit$isClickOutsideBounds(mouseX, mouseY, x, y, 0)) {
             boolean blocked = false;
             if (!(((Object) this) instanceof CreativeInventoryScreen)) {
-                blocked = !InputUtil.isKeyPressed(minecraft.getWindow().getHandle(),
+                blocked = !InputUtil.isKeyPressed(client.getWindow().getHandle(),
                     KeyBindingHelper.getBoundKeyOf(DontDropItMod.keyForceDrop).getCode());
                 switch (ModConfigHolder.getConfig().general.oobDropClickOverride) {
                 case FAVORITE_ITEMS:
@@ -119,28 +121,29 @@ public abstract class MixinContainerScreen_DoDropDelay extends Screen implements
                     break;
                 }
             }
-            List<String> tooltipText = new ArrayList<>();
+            List<Text> tooltipText = new ArrayList<>();
             if (blocked) {
-                tooltipText.add(Formatting.RED.toString() + Formatting.BOLD.toString() + I18n.translate("dontdropit.tooltip.drop.blocked"));
-                tooltipText.add(Formatting.GRAY.toString() + I18n.translate("dontdropit.tooltip.drop.unblock_hint", DontDropItMod.keyForceDrop.getBoundKeyLocalizedText()));
+                tooltipText.add(new TranslatableText("dontdropit.tooltip.drop.blocked").formatted(Formatting.BOLD, Formatting.RED));
+                tooltipText.add(new TranslatableText("dontdropit.tooltip.drop.unblock_hint", DontDropItMod.keyForceDrop.getBoundKeyLocalizedText())
+                                .formatted(Formatting.GRAY));
             } else
-                tooltipText.add(I18n.translate("dontdropit.tooltip.drop.allowed"));
-            renderTooltip(tooltipText, mouseX, mouseY);
+                tooltipText.add(new TranslatableText("dontdropit.tooltip.drop.allowed"));
+            renderTooltip(matrices, tooltipText, mouseX, mouseY);
         }
     }
 
-    @Inject(method = "drawSlot", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/ingame/ContainerScreen;setBlitOffset(I)V",
+    @Inject(method = "drawSlot", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/ingame/HandledScreen;setZOffset(I)V",
             ordinal = 1))
-    public void dontdropit$renderFavoriteIcon(Slot slot, CallbackInfo ci) {
+    public void dontdropit$renderFavoriteIcon(MatrixStack matrices, Slot slot, CallbackInfo ci) {
         if (slot instanceof CreativeInventoryScreen.LockableSlot)
             return;
         RenderSystem.disableDepthTest();
-        RenderSystem.pushMatrix();
-        RenderSystem.translatef(0, 0, getBlitOffset());
+        matrices.push();
+        matrices.translate(0, 0, getZOffset());
         RenderSystem.enableBlend();
-        DropHandler.renderSlotFavoriteIcon(slot);
+        DropHandler.renderSlotFavoriteIcon(matrices, slot);
         RenderSystem.disableBlend();
         RenderSystem.enableDepthTest();
-        RenderSystem.popMatrix();
+        matrices.pop();
     }
 }
