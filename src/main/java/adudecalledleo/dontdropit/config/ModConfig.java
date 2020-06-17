@@ -7,9 +7,16 @@ import java.util.List;
 
 public class ModConfig {
     public ModConfig() {
+        general = new General();
         dropDelay = new DropDelay();
         favorites = new Favorites();
     }
+
+    public static class General {
+        public boolean disableOOBClickDrop = true;
+    }
+
+    public General general;
 
     public static class DropDelay {
         public boolean enabled = true;

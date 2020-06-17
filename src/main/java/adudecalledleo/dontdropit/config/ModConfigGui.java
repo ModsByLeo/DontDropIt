@@ -12,7 +12,11 @@ public class ModConfigGui {
         final ModConfig cfg = ModConfigHolder.getConfig();
         ConfigBuilder cb = ConfigBuilder.create().setTitle("dontdropit.config.title");
         ConfigEntryBuilder eb = cb.entryBuilder();
-        cb.setSavingRunnable(ModConfigHolder::saveConfig); // TODO validation
+        cb.setSavingRunnable(ModConfigHolder::saveConfig);
+        ConfigCategory cGeneral = cb.getOrCreateCategory("dontdropit.config.category.general");
+        cGeneral.addEntry(eb.startBooleanToggle("dontdropit.config.general.disable_oob_click_drop", cfg.general.disableOOBClickDrop)
+                                    .setSaveConsumer(value -> cfg.general.disableOOBClickDrop = value)
+                                    .setDefaultValue(DEFAULTS.general.disableOOBClickDrop).build());
         ConfigCategory cDropDelay = cb.getOrCreateCategory("dontdropit.config.category.drop_delay");
         cDropDelay.addEntry(eb.startBooleanToggle("dontdropit.config.drop_delay.enabled", cfg.dropDelay.enabled)
                                     .setSaveConsumer(value -> cfg.dropDelay.enabled = value)

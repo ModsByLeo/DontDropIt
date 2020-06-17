@@ -1,10 +1,14 @@
 package adudecalledleo.dontdropit.config;
 
 import adudecalledleo.dontdropit.DontDropItMod;
+import adudecalledleo.dontdropit.util.ConfigUtil;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.item.Item;
+import net.minecraft.util.registry.Registry;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -13,17 +17,28 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.List;
 
 public class ModConfigHolder {
     public static final Gson GSON = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             .setPrettyPrinting().create();
 
     private static ModConfig config;
+    private static List<Item> favoriteItems;
+    private static List<Enchantment> favoriteEnchantments;
 
     public static ModConfig getConfig() {
         if (config == null)
             loadConfig();
         return config;
+    }
+
+    public static List<Item> getFavoriteItems() {
+        return favoriteItems;
+    }
+
+    public static List<Enchantment> getFavoriteEnchantments() {
+        return favoriteEnchantments;
     }
 
     private static final Path CONFIG_PATH = Paths.get(FabricLoader.getInstance().getConfigDirectory().toURI())
@@ -38,6 +53,8 @@ public class ModConfigHolder {
             } catch (IOException e) {
                 DontDropItMod.LOGGER.error("Loading config failed, continuing with default values", e);
                 config = new ModConfig();
+            } finally {
+                updateFavoriteLists();
             }
         } else {
             config = new ModConfig();
@@ -46,6 +63,7 @@ public class ModConfigHolder {
     }
 
     public static void saveConfig() {
+        updateFavoriteLists();
         try {
             BufferedWriter bw = Files.newBufferedWriter(CONFIG_PATH, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
             GSON.toJson(config, bw);
@@ -53,5 +71,10 @@ public class ModConfigHolder {
         } catch (IOException e) {
             DontDropItMod.LOGGER.error("Saving config failed", e);
         }
+    }
+
+    private static void updateFavoriteLists() {
+        favoriteItems = ConfigUtil.getAllFromRegistry(config.favorites.items, Registry.ITEM);
+        favoriteEnchantments = ConfigUtil.getAllFromRegistry(config.favorites.enchantments, Registry.ENCHANTMENT);
     }
 }

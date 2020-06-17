@@ -1,6 +1,7 @@
 package adudecalledleo.dontdropit.api;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.options.KeyBinding;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
 import net.minecraft.util.Hand;
@@ -11,8 +12,8 @@ public class DefaultDropHandlerInterface implements DropHandlerInterface {
     public static final DefaultDropHandlerInterface INSTANCE = new DefaultDropHandlerInterface();
 
     @Override
-    public boolean isDropKeyDown(MinecraftClient mc) {
-        return mc.options.keyDrop.isPressed();
+    public boolean isKeyDown(KeyBinding keyBinding, MinecraftClient mc) {
+        return keyBinding.isPressed();
     }
 
     @Override

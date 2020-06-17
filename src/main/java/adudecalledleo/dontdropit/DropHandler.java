@@ -5,10 +5,15 @@ import adudecalledleo.dontdropit.api.ContainerScreenExtensions;
 import adudecalledleo.dontdropit.api.DefaultDropHandlerInterface;
 import adudecalledleo.dontdropit.api.DropHandlerInterface;
 import adudecalledleo.dontdropit.config.ModConfigHolder;
+import adudecalledleo.dontdropit.util.ConfigUtil;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.util.InputUtil;
+import net.minecraft.container.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 public class DropHandler {
@@ -57,7 +62,7 @@ public class DropHandler {
     public void tick(MinecraftClient mc, DropHandlerInterface dhi) {
         if (!ModConfigHolder.getConfig().dropDelay.enabled)
             return;
-        if (dhi.isDropKeyDown(mc)) {
+        if (dhi.isKeyDown(mc.options.keyDrop, mc)) {
             if (dropDelayCounter < getDropDelayTicks()) {
                 if (dropDelayCounter == 0)
                     controlWasDown = Screen.hasControlDown();
@@ -81,11 +86,32 @@ public class DropHandler {
             dropDelayCounter = 0;
     }
 
-    public static void renderSlotUnderlay(int x, int y, int w, int h) {
+    private static final Identifier TEX_FAVORITE = new Identifier(DontDropItMod.MOD_ID, "textures/gui/favorite.png");
+
+    public static void renderSlotFavoriteIcon(ItemStack stack, int x, int y, int w, int h) {
+        if (ConfigUtil.isStackFavorite(stack)) {
+            MinecraftClient.getInstance().getTextureManager().bindTexture(TEX_FAVORITE);
+            DrawableHelper.blit(x, y, 16, 16, 16, 16, 16, 16);
+        }
+    }
+
+    public static void renderSlotFavoriteIcon(Slot slot) {
+        renderSlotFavoriteIcon(slot.getStack(), slot.xPosition, slot.yPosition, 16, 16);
+    }
+
+    public static void renderSlotProgressOverlay(ItemStack stack, int x, int y, int w, int h) {
+        if (!InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(),
+                KeyBindingHelper.getBoundKeyOf(DontDropItMod.keyFavoriteOverride).getKeyCode())
+          && ConfigUtil.isStackFavorite(stack))
+            return;
         if (isDroppingEntireStack())
             DrawableHelper.fill(x, y, x + w, y + h, 0x40FF0000);
         int counter = getTickCounter();
         int sH = MathHelper.floor((counter / (float) getDropDelayTicks()) * h);
         DrawableHelper.fill(x, y + h - sH, x + w, y + h, 0x8000FF00);
+    }
+
+    public static void renderSlotProgressOverlay(Slot slot) {
+        renderSlotProgressOverlay(slot.getStack(), slot.xPosition, slot.yPosition, 16, 16);
     }
 }
