@@ -26,7 +26,9 @@
   "dontdropit.config.favorites.items.tooltip": "Items of these types",
   "dontdropit.config.favorites.enchantments": "Enchantments",
   "dontdropit.config.favorites.enchantments.tooltip": "Items with these enchantments",
+  "dontdropit.config.favorites.items.error.bad_id": "Unknown item type \"%s\"",
   "dontdropit.config.favorites.tags": "Item Tags",
   "dontdropit.config.favorites.tags.tooltip": "Items that are contained in any of these tags",
-  "dontdropit.config.favorites.tooltip": "will be blocked from being dropped."
+  "dontdropit.config.favorites.tooltip": "will be blocked from being dropped.",
+  "dontdropit.config.favorites.enchantments.error.bad_id": "Unknown enchantment \"%s\""
 }
