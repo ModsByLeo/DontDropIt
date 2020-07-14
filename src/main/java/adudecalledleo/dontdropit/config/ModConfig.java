@@ -25,6 +25,7 @@ public class ModConfig {
     public static class DropDelay {
         public boolean enabled = true;
         public int ticks = 10;
+        public boolean doDelayOnce = false;
     }
 
     public DropDelay dropDelay;
@@ -39,6 +40,7 @@ public class ModConfig {
         public boolean enabled = true;
         public List<String> items;
         public List<String> enchantments;
+        public boolean enchIgnoreInvalidTargets = true;
         public List<String> tags;
     }
 

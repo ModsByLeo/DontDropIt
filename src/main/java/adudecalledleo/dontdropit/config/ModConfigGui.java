@@ -73,6 +73,10 @@ public class ModConfigGui {
                 .setSaveConsumer(value -> cfg.dropDelay.ticks = value)
                 .setTooltipSupplier(tooltip(k("drop_delay.ticks.tooltip"), 2))
                 .setDefaultValue(DEFAULTS.dropDelay.ticks).build());
+        cDropDelay.addEntry(eb.startBooleanToggle(k("drop_delay.do_delay_once"), cfg.dropDelay.doDelayOnce)
+                .setSaveConsumer(value -> cfg.dropDelay.doDelayOnce = value)
+                .setTooltipSupplier(tooltip(k("drop_delay.do_delay_once.tooltip"), 2))
+                .setDefaultValue(DEFAULTS.dropDelay.doDelayOnce).build());
     }
 
     private static void addFavoritesCategory(ModConfig cfg, ConfigBuilder cb) {
@@ -92,6 +96,10 @@ public class ModConfigGui {
                 .setErrorSupplier(ConfigUtil::checkEnchantmentIdList)
                 .setTooltipSupplier(tooltip(k("favorites.enchantments.tooltip"), k("favorites.tooltip")))
                 .setDefaultValue(DEFAULTS.favorites.enchantments).build());
+        cFavorites.addEntry(eb.startBooleanToggle(k("favorites.enchantments.ignore_invalid_targets"), cfg.favorites.enchIgnoreInvalidTargets)
+                .setSaveConsumer(value -> cfg.favorites.enchIgnoreInvalidTargets = value)
+                .setTooltipSupplier(tooltip(k("favorites.enchantments.ignore_invalid_targets.tooltip"), 2))
+                .setDefaultValue(DEFAULTS.favorites.enchIgnoreInvalidTargets).build());
         cFavorites.addEntry(eb.startStrList(k("favorites.tags"), cfg.favorites.tags)
                 .setSaveConsumer(ConfigUtil.makeListSaveConsumer(cfg.favorites.tags))
                 .setTooltipSupplier(tooltip(k("favorites.tags.tooltip"), k("favorites.tooltip")))

@@ -31,7 +31,14 @@
     "fabricloader": ">=0.4.0",
     "fabric": "*"
   },
+  "suggests": {
+    "modupdater": "*"
+  },
   "custom": {
-    "modmenu:clientsideOnly": true
+    "modmenu:clientsideOnly": true,
+    "modupdater": {
+      "strategy": "curseforge",
+      "projectID": 390383
+    }
   }
 }
