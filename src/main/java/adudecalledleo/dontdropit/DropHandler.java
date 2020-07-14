@@ -9,7 +9,6 @@ import adudecalledleo.dontdropit.util.ConfigUtil;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
@@ -53,43 +52,49 @@ public class DropHandler {
     public static boolean isDroppingEntireStack() {
         if (instance == null)
             return false;
-        return instance.controlWasDown;
+        return instance.wasDropStackDown;
     }
 
     private int dropDelayCounter = 0;
     private ItemStack currentStack = ItemStack.EMPTY;
-    private boolean controlWasDown = false;
+    private boolean wasDropStackDown = false;
+    private boolean didDelayOnce = false;
 
     public void tick(MinecraftClient mc, DropHandlerInterface dhi) {
         if (ModConfigHolder.getConfig().dropDelay.enabled) {
             if (dhi.isKeyDown(mc.options.keyDrop, mc)) {
-                if (dropDelayCounter < getDropDelayTicks()) {
+                if (didDelayOnce || dropDelayCounter < getDropDelayTicks()) {
                     ItemStack stack = dhi.getCurrentStack(mc);
                     if (dropDelayCounter == 0)
-                        controlWasDown = Screen.hasControlDown() && stack.getCount() > 1;
-                    else if (controlWasDown != Screen.hasControlDown() && stack.getCount() > 1) {
-                            dropDelayCounter = 0;
-                            return;
-                        }
+                        wasDropStackDown = dhi.isKeyDown(DontDropItMod.keyDropStack, mc) && stack.getCount() > 1;
+                    else if (wasDropStackDown != dhi.isKeyDown(DontDropItMod.keyDropStack, mc) && stack.getCount() > 1) {
+                        dropDelayCounter = 0;
+                        didDelayOnce = false;
+                        return;
+                    }
                     if (stack.isEmpty() || !dhi.canDropStack(stack, mc) || (dropDelayCounter > 0 && stack != currentStack)) {
                         dropDelayCounter = 0;
+                        didDelayOnce = false;
                         return;
                     }
                     currentStack = stack;
                     dropDelayCounter++;
                 } else {
                     dropDelayCounter = 0;
-                    dhi.drop(controlWasDown, mc);
+                    dhi.drop(wasDropStackDown, mc);
+                    didDelayOnce = true;
                 }
-            } else
+            } else {
                 dropDelayCounter = 0;
+                didDelayOnce = false;
+            }
         } else {
             // 1. use the KeyBinding directly so we don't drop twice in ContainerScreens (KeyBindings aren't updated in Screens)
             // 2. use wasPressed() instead of isPressed() so we only drop an item once per tap
             if (mc.options.keyDrop.wasPressed()) {
                 ItemStack stack = dhi.getCurrentStack(mc);
                 if (dhi.canDropStack(stack, mc))
-                    dhi.drop(Screen.hasControlDown(), mc);
+                    dhi.drop(DontDropItMod.keyDropStack.isPressed(), mc);
             }
         }
     }

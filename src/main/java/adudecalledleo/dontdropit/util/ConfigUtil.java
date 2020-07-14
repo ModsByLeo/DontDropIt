@@ -1,7 +1,7 @@
 package adudecalledleo.dontdropit.util;
 
 import adudecalledleo.dontdropit.config.ModConfigHolder;
-import net.minecraft.client.resource.language.I18n;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -11,10 +11,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -70,9 +67,19 @@ public class ConfigUtil {
             return false;
         if (ModConfigHolder.getFavoriteItems().contains(stack.getItem()))
             return true;
-        if (!Collections.disjoint(ModConfigHolder.getFavoriteEnchantments(),
-                EnchantmentHelper.get(stack).keySet()))
-            return true;
+        if (ModConfigHolder.getConfig().favorites.enchIgnoreInvalidTargets) {
+            Set<Enchantment> enchantments = EnchantmentHelper.get(stack).keySet();
+            for (Enchantment enchantment : enchantments) {
+                if (!enchantment.isAcceptableItem(stack))
+                    continue;
+                if (ModConfigHolder.getFavoriteEnchantments().contains(enchantment))
+                    return true;
+            }
+        } else {
+            if (!Collections.disjoint(ModConfigHolder.getFavoriteEnchantments(),
+                    EnchantmentHelper.get(stack).keySet()))
+                return true;
+        }
         List<Tag<Item>> favoriteTags = ModConfigHolder.getFavoriteTags();
         return favoriteTags.stream().anyMatch(tag -> tag.contains(stack.getItem()));
     }

@@ -16,12 +16,15 @@ public class DontDropItMod implements ClientModInitializer {
 
     public static Logger LOGGER = LogManager.getLogger(MOD_NAME);
 
-    public static KeyBinding keyForceDrop = new KeyBinding("key.dontdropit.forceDrop",
+    public static final KeyBinding keyDropStack = new KeyBinding("key.dontdropit.dropStack",
+            GLFW.GLFW_KEY_LEFT_CONTROL, "key.categories.inventory");
+    public static final KeyBinding keyForceDrop = new KeyBinding("key.dontdropit.forceDrop",
             GLFW.GLFW_KEY_LEFT_ALT, "key.categories.inventory");
 
     @Override
     public void onInitializeClient() {
         ModConfigHolder.loadConfig();
+        KeyBindingHelper.registerKeyBinding(keyDropStack);
         KeyBindingHelper.registerKeyBinding(keyForceDrop);
         ClientTickCallback.EVENT.register(DropHandler::onClientTick);
         log(Level.INFO, "Don't drop that Diamond Pickaxe!");
