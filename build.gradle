@@ -14,6 +14,10 @@ minecraft {
 	accessWidener "src/main/resources/dontdropit.accesswidener"
 }
 
+repositories {
+	maven { url 'https://jitpack.io' }
+}
+
 dependencies {
 	//to change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
@@ -24,6 +28,8 @@ dependencies {
 	modImplementation "io.github.prospector:modmenu:${project.modmenu_version}"
 	modApi "me.shedaniel.cloth:config-2:${project.cloth_config_version}"
 	include "me.shedaniel.cloth:config-2:${project.cloth_config_version}"
+	modImplementation "com.github.Leo40Git:ConflictInHarmony:${project.cih_version}"
+	include "com.github.Leo40Git:ConflictInHarmony:${project.cih_version}"
 }
 
 processResources {

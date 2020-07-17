@@ -37,9 +37,10 @@ public class ModConfigHolder {
     }
 
     public static void removeListener(ConfigChangedListener listener) {
-        LISTENERS_TO_REM.remove(listener);
+        LISTENERS_TO_REM.add(listener);
     }
 
+    @SuppressWarnings("deprecation")
     private static final Path CONFIG_PATH = Paths.get(FabricLoader.getInstance().getConfigDirectory().toURI())
                                                     .resolve("dontdropit.json");
 
