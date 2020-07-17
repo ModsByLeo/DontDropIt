@@ -47,7 +47,7 @@ public class FavoritesUtil {
         if (getFavoriteItems().contains(stack.getItem()))
             return true;
         if (ModConfigHolder.getConfig().favorites.enchIgnoreInvalidTargets) {
-            Set<Enchantment> enchantments = EnchantmentHelper.getEnchantments(stack).keySet();
+            Set<Enchantment> enchantments = EnchantmentHelper.get(stack).keySet();
             for (Enchantment enchantment : enchantments) {
                 if (!enchantment.isAcceptableItem(stack))
                     continue;
@@ -56,7 +56,7 @@ public class FavoritesUtil {
             }
         } else {
             if (!Collections.disjoint(getFavoriteEnchantments(),
-                    EnchantmentHelper.getEnchantments(stack).keySet()))
+                    EnchantmentHelper.get(stack).keySet()))
                 return true;
         }
         List<Tag<Item>> favoriteTags = getFavoriteTags();

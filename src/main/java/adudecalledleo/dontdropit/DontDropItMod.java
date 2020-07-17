@@ -22,6 +22,7 @@ public class DontDropItMod implements ClientModInitializer {
     public static final KeyBinding keyForceDrop = new KeyBinding("key.dontdropit.forceDrop",
             GLFW.GLFW_KEY_LEFT_ALT, "key.categories.inventory");
 
+    @SuppressWarnings("deprecation")
     @Override
     public void onInitializeClient() {
         FavoritesUtil.addConfigListener();
