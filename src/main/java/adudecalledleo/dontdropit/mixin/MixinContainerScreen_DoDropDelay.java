@@ -4,7 +4,7 @@ import adudecalledleo.dontdropit.DontDropItMod;
 import adudecalledleo.dontdropit.DropHandler;
 import adudecalledleo.dontdropit.api.ContainerScreenExtensions;
 import adudecalledleo.dontdropit.config.ModConfigHolder;
-import adudecalledleo.dontdropit.util.ConfigUtil;
+import adudecalledleo.dontdropit.util.FavoritesUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.gui.screen.Screen;
@@ -54,7 +54,7 @@ public abstract class MixinContainerScreen_DoDropDelay extends Screen implements
         if (slot == null && invSlot == -999 && slotActionType == SlotActionType.PICKUP) {
             switch (ModConfigHolder.getConfig().general.oobDropClickOverride) {
             case FAVORITE_ITEMS:
-                if (!ConfigUtil.isStackFavorite(playerInventory.getCursorStack()))
+                if (!FavoritesUtil.isStackFavorite(playerInventory.getCursorStack()))
                     break;
             case ALL_ITEMS:
                 if (InputUtil.isKeyPressed(client.getWindow().getHandle(),
@@ -76,7 +76,7 @@ public abstract class MixinContainerScreen_DoDropDelay extends Screen implements
     public void drop(boolean entireStack) {
         if (getFocusedSlot() == null)
             return;
-        dontdropit$onMouseClick(getFocusedSlot(), getFocusedSlot().id, entireStack ? 0 : 1, SlotActionType.THROW);
+        dontdropit$onMouseClick(getFocusedSlot(), getFocusedSlot().id, entireStack ? 1 : 0, SlotActionType.THROW);
     }
 
     @SuppressWarnings("rawtypes")
@@ -114,7 +114,7 @@ public abstract class MixinContainerScreen_DoDropDelay extends Screen implements
                     KeyBindingHelper.getBoundKeyOf(DontDropItMod.keyForceDrop).getCode());
                 switch (ModConfigHolder.getConfig().general.oobDropClickOverride) {
                 case FAVORITE_ITEMS:
-                    if (ConfigUtil.isStackFavorite(playerInventory.getCursorStack()))
+                    if (FavoritesUtil.isStackFavorite(playerInventory.getCursorStack()))
                         break;
                 case DISABLED:
                     blocked = false;

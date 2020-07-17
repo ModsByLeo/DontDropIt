@@ -11,7 +11,10 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -54,33 +57,16 @@ public class ConfigUtil {
         return checkIdList(idList, Registry.ENCHANTMENT, "dontdropit.config.favorites.enchantments.error.bad_id");
     }
 
+    public static <T1, T2, R> Function<T1, R> composeMappers(Function<T1, T2> map1, Function<T2, R> map2) {
+        return key -> map2.apply(map1.apply(key));
+    }
+
     public static <T> List<T> getAllFromRegistry(List<String> idList, Function<Identifier, T> registryGetter) {
-        return idList.stream().map(id -> registryGetter.apply(new Identifier(id))).collect(Collectors.toList());
+        return idList.stream().map(composeMappers(Identifier::new, registryGetter)).filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     public static <T> List<T> getAllFromRegistry(List<String> idList, Registry<T> registry) {
         return getAllFromRegistry(idList, registry::get);
-    }
-
-    public static boolean isStackFavorite(ItemStack stack) {
-        if (!ModConfigHolder.getConfig().favorites.enabled)
-            return false;
-        if (ModConfigHolder.getFavoriteItems().contains(stack.getItem()))
-            return true;
-        if (ModConfigHolder.getConfig().favorites.enchIgnoreInvalidTargets) {
-            Set<Enchantment> enchantments = EnchantmentHelper.get(stack).keySet();
-            for (Enchantment enchantment : enchantments) {
-                if (!enchantment.isAcceptableItem(stack))
-                    continue;
-                if (ModConfigHolder.getFavoriteEnchantments().contains(enchantment))
-                    return true;
-            }
-        } else {
-            if (!Collections.disjoint(ModConfigHolder.getFavoriteEnchantments(),
-                    EnchantmentHelper.get(stack).keySet()))
-                return true;
-        }
-        List<Tag<Item>> favoriteTags = ModConfigHolder.getFavoriteTags();
-        return favoriteTags.stream().anyMatch(tag -> tag.contains(stack.getItem()));
     }
 }

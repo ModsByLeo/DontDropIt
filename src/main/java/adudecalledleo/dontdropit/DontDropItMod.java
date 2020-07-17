@@ -1,6 +1,7 @@
 package adudecalledleo.dontdropit;
 
 import adudecalledleo.dontdropit.config.ModConfigHolder;
+import adudecalledleo.dontdropit.util.FavoritesUtil;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.event.client.ClientTickCallback;
@@ -23,6 +24,7 @@ public class DontDropItMod implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        FavoritesUtil.addConfigListener();
         ModConfigHolder.loadConfig();
         KeyBindingHelper.registerKeyBinding(keyDropStack);
         KeyBindingHelper.registerKeyBinding(keyForceDrop);

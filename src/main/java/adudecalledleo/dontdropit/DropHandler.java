@@ -5,7 +5,7 @@ import adudecalledleo.dontdropit.api.ContainerScreenExtensions;
 import adudecalledleo.dontdropit.api.DefaultDropHandlerInterface;
 import adudecalledleo.dontdropit.api.DropHandlerInterface;
 import adudecalledleo.dontdropit.config.ModConfigHolder;
-import adudecalledleo.dontdropit.util.ConfigUtil;
+import adudecalledleo.dontdropit.util.FavoritesUtil;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
@@ -58,36 +58,30 @@ public class DropHandler {
     private int dropDelayCounter = 0;
     private ItemStack currentStack = ItemStack.EMPTY;
     private boolean wasDropStackDown = false;
-    private boolean didDelayOnce = false;
 
     public void tick(MinecraftClient mc, DropHandlerInterface dhi) {
         if (ModConfigHolder.getConfig().dropDelay.enabled) {
             if (dhi.isKeyDown(mc.options.keyDrop, mc)) {
-                if (didDelayOnce || dropDelayCounter < getDropDelayTicks()) {
+                if (dropDelayCounter < getDropDelayTicks()) {
                     ItemStack stack = dhi.getCurrentStack(mc);
                     if (dropDelayCounter == 0)
                         wasDropStackDown = dhi.isKeyDown(DontDropItMod.keyDropStack, mc) && stack.getCount() > 1;
                     else if (wasDropStackDown != dhi.isKeyDown(DontDropItMod.keyDropStack, mc) && stack.getCount() > 1) {
                         dropDelayCounter = 0;
-                        didDelayOnce = false;
                         return;
                     }
                     if (stack.isEmpty() || !dhi.canDropStack(stack, mc) || (dropDelayCounter > 0 && stack != currentStack)) {
                         dropDelayCounter = 0;
-                        didDelayOnce = false;
                         return;
                     }
                     currentStack = stack;
                     dropDelayCounter++;
                 } else {
-                    dropDelayCounter = 0;
+                    dropDelayCounter = ModConfigHolder.getConfig().dropDelay.doDelayOnce ? getDropDelayTicks() : 0;
                     dhi.drop(wasDropStackDown, mc);
-                    didDelayOnce = true;
                 }
-            } else {
+            } else
                 dropDelayCounter = 0;
-                didDelayOnce = false;
-            }
         } else {
             // 1. use the KeyBinding directly so we don't drop twice in ContainerScreens (KeyBindings aren't updated in Screens)
             // 2. use wasPressed() instead of isPressed() so we only drop an item once per tap
@@ -103,7 +97,7 @@ public class DropHandler {
 
     public static void renderSlotFavoriteIcon(MatrixStack matrices, ItemStack stack,
                                               int x, int y) {
-        if (ConfigUtil.isStackFavorite(stack)) {
+        if (FavoritesUtil.isStackFavorite(stack)) {
             MinecraftClient.getInstance().getTextureManager().bindTexture(TEX_FAVORITE);
             DrawableHelper.drawTexture(matrices, x, y, 16, 16, 16, 16, 16, 16);
         }
@@ -117,7 +111,7 @@ public class DropHandler {
                                                  int x, int y, int w, int h) {
         if (!InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(),
                 KeyBindingHelper.getBoundKeyOf(DontDropItMod.keyForceDrop).getCode())
-          && ConfigUtil.isStackFavorite(stack))
+          && FavoritesUtil.isStackFavorite(stack))
             return;
         if (stack.getCount() > 1 && isDroppingEntireStack())
             DrawableHelper.fill(matrices, x, y, x + w, y + h, 0x20FF0000);
