@@ -4,7 +4,7 @@
   "compatibilityLevel": "JAVA_8",
   "client": [
     "MixinMinecraftClient_DisableDropKey",
-    "MixinHandledScreen_DoDropDelay",
+    "MixinContainerScreen_DoDropDelay",
     "MixinInGameHud_RenderDropProgress"
   ],
   "injectors": {

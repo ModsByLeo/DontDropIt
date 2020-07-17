@@ -2,7 +2,7 @@ package adudecalledleo.dontdropit.api;
 
 import net.minecraft.screen.slot.Slot;
 
-public interface HandledScreenExtensions {
+public interface ContainerScreenExtensions {
     Slot getFocusedSlot();
     void drop(boolean entireStack);
 }

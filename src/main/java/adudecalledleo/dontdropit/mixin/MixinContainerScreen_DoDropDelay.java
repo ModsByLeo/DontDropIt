@@ -2,7 +2,7 @@ package adudecalledleo.dontdropit.mixin;
 
 import adudecalledleo.dontdropit.DontDropItMod;
 import adudecalledleo.dontdropit.DropHandler;
-import adudecalledleo.dontdropit.api.HandledScreenExtensions;
+import adudecalledleo.dontdropit.api.ContainerScreenExtensions;
 import adudecalledleo.dontdropit.config.ModConfigHolder;
 import adudecalledleo.dontdropit.util.ConfigUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -32,8 +32,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Mixin(HandledScreen.class)
-public abstract class MixinHandledScreen_DoDropDelay extends Screen implements HandledScreenExtensions {
-    protected MixinHandledScreen_DoDropDelay() {
+public abstract class MixinContainerScreen_DoDropDelay extends Screen implements ContainerScreenExtensions {
+    protected MixinContainerScreen_DoDropDelay() {
         super(null);
         throw new RuntimeException("This shouldn't be invoked...");
     }

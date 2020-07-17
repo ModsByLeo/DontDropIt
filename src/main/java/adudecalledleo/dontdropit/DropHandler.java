@@ -1,7 +1,7 @@
 package adudecalledleo.dontdropit;
 
-import adudecalledleo.dontdropit.api.HandledScreenDropHandlerInterface;
-import adudecalledleo.dontdropit.api.HandledScreenExtensions;
+import adudecalledleo.dontdropit.api.ContainerScreenDropHandlerInterface;
+import adudecalledleo.dontdropit.api.ContainerScreenExtensions;
 import adudecalledleo.dontdropit.api.DefaultDropHandlerInterface;
 import adudecalledleo.dontdropit.api.DropHandlerInterface;
 import adudecalledleo.dontdropit.config.ModConfigHolder;
@@ -27,14 +27,14 @@ public class DropHandler {
         instance.tick(mc, dhi);
     }
 
-    private static HandledScreenDropHandlerInterface csdhi;
+    private static ContainerScreenDropHandlerInterface csdhi;
 
     public static void onClientTick(MinecraftClient mc) {
         if (mc.currentScreen == null)
             onClientTick(mc, DefaultDropHandlerInterface.INSTANCE);
-        else if (mc.currentScreen instanceof HandledScreenExtensions) {
-            if (csdhi == null || csdhi.getHse() != mc.currentScreen)
-                csdhi = new HandledScreenDropHandlerInterface((HandledScreenExtensions) mc.currentScreen);
+        else if (mc.currentScreen instanceof ContainerScreenExtensions) {
+            if (csdhi == null || csdhi.getCse() != mc.currentScreen)
+                csdhi = new ContainerScreenDropHandlerInterface((ContainerScreenExtensions) mc.currentScreen);
             onClientTick(mc, csdhi);
         }
     }
