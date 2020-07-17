@@ -57,36 +57,30 @@ public class DropHandler {
     private int dropDelayCounter = 0;
     private ItemStack currentStack = ItemStack.EMPTY;
     private boolean wasDropStackDown = false;
-    private boolean didDelayOnce = false;
 
     public void tick(MinecraftClient mc, DropHandlerInterface dhi) {
         if (ModConfigHolder.getConfig().dropDelay.enabled) {
             if (dhi.isKeyDown(mc.options.keyDrop, mc)) {
-                if (didDelayOnce || dropDelayCounter < getDropDelayTicks()) {
+                if (dropDelayCounter < getDropDelayTicks()) {
                     ItemStack stack = dhi.getCurrentStack(mc);
                     if (dropDelayCounter == 0)
                         wasDropStackDown = dhi.isKeyDown(DontDropItMod.keyDropStack, mc) && stack.getCount() > 1;
                     else if (wasDropStackDown != dhi.isKeyDown(DontDropItMod.keyDropStack, mc) && stack.getCount() > 1) {
                         dropDelayCounter = 0;
-                        didDelayOnce = false;
                         return;
                     }
                     if (stack.isEmpty() || !dhi.canDropStack(stack, mc) || (dropDelayCounter > 0 && stack != currentStack)) {
                         dropDelayCounter = 0;
-                        didDelayOnce = false;
                         return;
                     }
                     currentStack = stack;
                     dropDelayCounter++;
                 } else {
-                    dropDelayCounter = 0;
+                    dropDelayCounter = ModConfigHolder.getConfig().dropDelay.doDelayOnce ? getDropDelayTicks() : 0;
                     dhi.drop(wasDropStackDown, mc);
-                    didDelayOnce = true;
                 }
-            } else {
+            } else
                 dropDelayCounter = 0;
-                didDelayOnce = false;
-            }
         } else {
             // 1. use the KeyBinding directly so we don't drop twice in ContainerScreens (KeyBindings aren't updated in Screens)
             // 2. use wasPressed() instead of isPressed() so we only drop an item once per tap

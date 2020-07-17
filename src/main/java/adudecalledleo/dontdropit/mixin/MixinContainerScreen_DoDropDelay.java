@@ -74,7 +74,7 @@ public abstract class MixinContainerScreen_DoDropDelay extends Screen implements
     public void drop(boolean entireStack) {
         if (getFocusedSlot() == null)
             return;
-        dontdropit$onMouseClick(getFocusedSlot(), getFocusedSlot().id, entireStack ? 0 : 1, SlotActionType.THROW);
+        dontdropit$onMouseClick(getFocusedSlot(), getFocusedSlot().id, entireStack ? 1 : 0, SlotActionType.THROW);
     }
 
     @SuppressWarnings("rawtypes")
