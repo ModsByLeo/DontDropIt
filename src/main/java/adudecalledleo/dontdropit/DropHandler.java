@@ -5,7 +5,7 @@ import adudecalledleo.dontdropit.api.ContainerScreenExtensions;
 import adudecalledleo.dontdropit.api.DefaultDropHandlerInterface;
 import adudecalledleo.dontdropit.api.DropHandlerInterface;
 import adudecalledleo.dontdropit.config.ModConfigHolder;
-import adudecalledleo.dontdropit.util.ConfigUtil;
+import adudecalledleo.dontdropit.util.FavoritesUtil;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
@@ -101,7 +101,7 @@ public class DropHandler {
     private static final Identifier TEX_FAVORITE = new Identifier(DontDropItMod.MOD_ID, "textures/gui/favorite.png");
 
     public static void renderSlotFavoriteIcon(ItemStack stack, int x, int y) {
-        if (ConfigUtil.isStackFavorite(stack)) {
+        if (FavoritesUtil.isStackFavorite(stack)) {
             MinecraftClient.getInstance().getTextureManager().bindTexture(TEX_FAVORITE);
             DrawableHelper.blit(x, y, 16, 16, 16, 16, 16, 16);
         }
@@ -114,7 +114,7 @@ public class DropHandler {
     public static void renderSlotProgressOverlay(ItemStack stack, int x, int y, int w, int h) {
         if (!InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(),
                 KeyBindingHelper.getBoundKeyOf(DontDropItMod.keyForceDrop).getKeyCode())
-          && ConfigUtil.isStackFavorite(stack))
+          && FavoritesUtil.isStackFavorite(stack))
             return;
         if (stack.getCount() > 1 && isDroppingEntireStack())
             DrawableHelper.fill(x, y, x + w, y + h, 0x20FF0000);

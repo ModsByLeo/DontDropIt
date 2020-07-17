@@ -1,16 +1,10 @@
 package adudecalledleo.dontdropit.config;
 
 import adudecalledleo.dontdropit.DontDropItMod;
-import adudecalledleo.dontdropit.util.ConfigUtil;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import net.fabricmc.fabric.api.tag.TagRegistry;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.item.Item;
-import net.minecraft.tag.Tag;
-import net.minecraft.util.registry.Registry;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -19,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ModConfigHolder {
@@ -26,9 +21,6 @@ public class ModConfigHolder {
             .setPrettyPrinting().create();
 
     private static ModConfig config;
-    private static List<Item> favoriteItems;
-    private static List<Enchantment> favoriteEnchantments;
-    private static List<Tag<Item>> favoriteTags;
 
     public static ModConfig getConfig() {
         if (config == null)
@@ -36,16 +28,16 @@ public class ModConfigHolder {
         return config;
     }
 
-    public static List<Item> getFavoriteItems() {
-        return favoriteItems;
+    private static final List<ConfigChangedListener> LISTENERS = new ArrayList<>();
+    private static final List<ConfigChangedListener> LISTENERS_TO_ADD = new ArrayList<>();
+    private static final List<ConfigChangedListener> LISTENERS_TO_REM = new ArrayList<>();
+
+    public static void addListener(ConfigChangedListener listener) {
+        LISTENERS_TO_ADD.add(listener);
     }
 
-    public static List<Enchantment> getFavoriteEnchantments() {
-        return favoriteEnchantments;
-    }
-
-    public static List<Tag<Item>> getFavoriteTags() {
-        return favoriteTags;
+    public static void removeListener(ConfigChangedListener listener) {
+        LISTENERS_TO_REM.remove(listener);
     }
 
     private static final Path CONFIG_PATH = Paths.get(FabricLoader.getInstance().getConfigDirectory().toURI())
@@ -61,7 +53,7 @@ public class ModConfigHolder {
                 DontDropItMod.LOGGER.error("Loading config failed, continuing with default values", e);
                 config = new ModConfig();
             } finally {
-                updateFavoriteLists();
+                notifyConfigListeners();
             }
         } else {
             config = new ModConfig();
@@ -70,19 +62,24 @@ public class ModConfigHolder {
     }
 
     public static void saveConfig() {
-        updateFavoriteLists();
         try {
             BufferedWriter bw = Files.newBufferedWriter(CONFIG_PATH, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
             GSON.toJson(config, bw);
             bw.close();
         } catch (IOException e) {
             DontDropItMod.LOGGER.error("Saving config failed", e);
+        } finally {
+            notifyConfigListeners();
         }
     }
 
-    private static void updateFavoriteLists() {
-        favoriteItems = ConfigUtil.getAllFromRegistry(config.favorites.items, Registry.ITEM);
-        favoriteEnchantments = ConfigUtil.getAllFromRegistry(config.favorites.enchantments, Registry.ENCHANTMENT);
-        favoriteTags = ConfigUtil.getAllFromRegistry(config.favorites.tags, TagRegistry::item);
+    private static void notifyConfigListeners() {
+        LISTENERS.addAll(LISTENERS_TO_ADD);
+        LISTENERS_TO_ADD.clear();
+        LISTENERS.removeAll(LISTENERS_TO_REM);
+        LISTENERS_TO_REM.clear();
+        for (ConfigChangedListener listener : LISTENERS)
+            listener.onConfigChanged(config);
     }
+
 }
