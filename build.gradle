@@ -14,6 +14,10 @@ minecraft {
 	accessWidener "src/main/resources/dontdropit.accesswidener"
 }
 
+configurations.all {
+	resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
+
 repositories {
 	maven { url 'https://jitpack.io' }
 }
