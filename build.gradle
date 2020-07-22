@@ -32,8 +32,8 @@ dependencies {
 	modImplementation "io.github.prospector:modmenu:${project.modmenu_version}"
 	modApi "me.shedaniel.cloth:config-2:${project.cloth_config_version}"
 	include "me.shedaniel.cloth:config-2:${project.cloth_config_version}"
-	modImplementation "com.github.Leo40Git:ConflictInHarmony:${project.cih_version}"
-	include "com.github.Leo40Git:ConflictInHarmony:${project.cih_version}"
+	modImplementation "com.github.siphalor:amecs:${project.amecs_version}"
+	include "com.github.siphalor:amecs:${project.amecs_version}"
 }
 
 processResources {
