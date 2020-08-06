@@ -14,15 +14,9 @@ minecraft {
 	accessWidener "src/main/resources/dontdropit.accesswidener"
 }
 
-configurations.all {
-	resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
-}
-
 repositories {
 	maven { url 'https://jitpack.io' }
-	maven {
-		url = "https://dl.bintray.com/adudecalledleo/mcmods.fabric"
-	}
+	maven { url "https://dl.bintray.com/adudecalledleo/mcmods.fabric" }
 }
 
 dependencies {
