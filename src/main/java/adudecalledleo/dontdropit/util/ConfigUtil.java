@@ -1,11 +1,5 @@
 package adudecalledleo.dontdropit.util;
 
-import adudecalledleo.dontdropit.config.ModConfigHolder;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tag.Tag;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;

@@ -4,7 +4,6 @@ import adudecalledleo.dontdropit.api.ContainerScreenDropHandlerInterface;
 import adudecalledleo.dontdropit.api.ContainerScreenExtensions;
 import adudecalledleo.dontdropit.api.DefaultDropHandlerInterface;
 import adudecalledleo.dontdropit.api.DropHandlerInterface;
-import adudecalledleo.dontdropit.config.ModConfigHolder;
 import adudecalledleo.dontdropit.util.FavoritesUtil;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
@@ -15,6 +14,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+
+import static adudecalledleo.dontdropit.DontDropItMod.CONFIG_HOLDER;
 
 public class DropHandler {
     private static DropHandler instance;
@@ -40,7 +41,7 @@ public class DropHandler {
     }
 
     public static int getDropDelayTicks() {
-        return ModConfigHolder.getConfig().dropDelay.ticks;
+        return CONFIG_HOLDER.getConfig().dropDelay.ticks;
     }
 
     public static int getTickCounter() {
@@ -60,7 +61,7 @@ public class DropHandler {
     private boolean wasDropStackDown = false;
 
     public void tick(MinecraftClient mc, DropHandlerInterface dhi) {
-        if (ModConfigHolder.getConfig().dropDelay.enabled) {
+        if (CONFIG_HOLDER.getConfig().dropDelay.enabled) {
             if (dhi.isKeyDown(mc.options.keyDrop, mc)) {
                 if (dropDelayCounter < getDropDelayTicks()) {
                     ItemStack stack = dhi.getCurrentStack(mc);
@@ -77,7 +78,7 @@ public class DropHandler {
                     currentStack = stack;
                     dropDelayCounter++;
                 } else {
-                    dropDelayCounter = ModConfigHolder.getConfig().dropDelay.doDelayOnce ? getDropDelayTicks() : 0;
+                    dropDelayCounter = CONFIG_HOLDER.getConfig().dropDelay.doDelayOnce ? getDropDelayTicks() : 0;
                     dhi.drop(wasDropStackDown, mc);
                 }
             } else

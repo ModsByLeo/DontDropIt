@@ -1,7 +1,7 @@
 package adudecalledleo.dontdropit.util;
 
 import adudecalledleo.dontdropit.config.ModConfig;
-import adudecalledleo.dontdropit.config.ModConfigHolder;
+import adudecalledleo.lionutils.ConfigHolder;
 import net.fabricmc.fabric.api.tag.TagRegistry;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -13,6 +13,8 @@ import net.minecraft.util.registry.Registry;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
+import static adudecalledleo.dontdropit.DontDropItMod.CONFIG_HOLDER;
 
 public class FavoritesUtil {
     private static List<Item> favoriteItems;
@@ -31,22 +33,22 @@ public class FavoritesUtil {
         return favoriteTags;
     }
 
-    private static void updateFavoriteLists(ModConfig config) {
+    private static void updateFavoriteLists(ConfigHolder.Phase phase, ModConfig config) {
         favoriteItems = ConfigUtil.getAllFromRegistry(config.favorites.items, Registry.ITEM);
         favoriteEnchantments = ConfigUtil.getAllFromRegistry(config.favorites.enchantments, Registry.ENCHANTMENT);
         favoriteTags = ConfigUtil.getAllFromRegistry(config.favorites.tags, TagRegistry::item);
     }
 
     public static void addConfigListener() {
-        ModConfigHolder.addListener(FavoritesUtil::updateFavoriteLists);
+        CONFIG_HOLDER.addListener(FavoritesUtil::updateFavoriteLists);
     }
 
     public static boolean isStackFavorite(ItemStack stack) {
-        if (!ModConfigHolder.getConfig().favorites.enabled)
+        if (!CONFIG_HOLDER.getConfig().favorites.enabled)
             return false;
         if (getFavoriteItems().contains(stack.getItem()))
             return true;
-        if (ModConfigHolder.getConfig().favorites.enchIgnoreInvalidTargets) {
+        if (CONFIG_HOLDER.getConfig().favorites.enchIgnoreInvalidTargets) {
             Set<Enchantment> enchantments = EnchantmentHelper.get(stack).keySet();
             for (Enchantment enchantment : enchantments) {
                 if (!enchantment.isAcceptableItem(stack))

@@ -3,7 +3,6 @@ package adudecalledleo.dontdropit.mixin;
 import adudecalledleo.dontdropit.DontDropItMod;
 import adudecalledleo.dontdropit.DropHandler;
 import adudecalledleo.dontdropit.api.ContainerScreenExtensions;
-import adudecalledleo.dontdropit.config.ModConfigHolder;
 import adudecalledleo.dontdropit.util.FavoritesUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
@@ -31,6 +30,8 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import java.util.ArrayList;
 import java.util.List;
 
+import static adudecalledleo.dontdropit.DontDropItMod.CONFIG_HOLDER;
+
 @Mixin(HandledScreen.class)
 public abstract class MixinContainerScreen_DoDropDelay extends Screen implements ContainerScreenExtensions {
     protected MixinContainerScreen_DoDropDelay() {
@@ -38,11 +39,11 @@ public abstract class MixinContainerScreen_DoDropDelay extends Screen implements
         throw new RuntimeException("This shouldn't be invoked...");
     }
 
-    @Shadow(prefix = "dontdropit$")
-    protected abstract void dontdropit$onMouseClick(Slot slot, int invSlot, int button, SlotActionType slotActionType);
+    @Shadow
+    protected abstract void onMouseClick(Slot slot, int invSlot, int button, SlotActionType slotActionType);
 
-    @Shadow(prefix = "dontdropit$")
-    protected abstract boolean dontdropit$isClickOutsideBounds(double mouseX, double mouseY, int left, int top, int button);
+    @Shadow
+    protected abstract boolean isClickOutsideBounds(double mouseX, double mouseY, int left, int top, int button);
 
     @Shadow protected int x;
     @Shadow protected int y;
@@ -52,7 +53,7 @@ public abstract class MixinContainerScreen_DoDropDelay extends Screen implements
     @Inject(method = "onMouseClick", at = @At("HEAD"), cancellable = true)
     public void dontdropit$disableOOBClickDrop(Slot slot, int invSlot, int button, SlotActionType slotActionType, CallbackInfo ci) {
         if (slot == null && invSlot == -999 && slotActionType == SlotActionType.PICKUP) {
-            switch (ModConfigHolder.getConfig().general.oobDropClickOverride) {
+            switch (CONFIG_HOLDER.getConfig().general.oobDropClickOverride) {
             case FAVORITE_ITEMS:
                 if (!FavoritesUtil.isStackFavorite(playerInventory.getCursorStack()))
                     break;
@@ -76,15 +77,15 @@ public abstract class MixinContainerScreen_DoDropDelay extends Screen implements
     public void drop(boolean entireStack) {
         if (getFocusedSlot() == null)
             return;
-        dontdropit$onMouseClick(getFocusedSlot(), getFocusedSlot().id, entireStack ? 1 : 0, SlotActionType.THROW);
+        onMouseClick(getFocusedSlot(), getFocusedSlot().id, entireStack ? 1 : 0, SlotActionType.THROW);
     }
 
     @SuppressWarnings("rawtypes")
     @Redirect(method = "keyPressed", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/ingame/HandledScreen;onMouseClick(Lnet/minecraft/screen/slot/Slot;IILnet/minecraft/screen/slot/SlotActionType;)V",
             ordinal = 1))
     public void dontdropit$disableDropKey(HandledScreen containerScreen, Slot slot, int invSlot, int button, SlotActionType slotActionType) {
-        if (slot instanceof CreativeInventoryScreen.LockableSlot || !ModConfigHolder.getConfig().dropDelay.enabled)
-            dontdropit$onMouseClick(slot, invSlot, button, slotActionType);
+        if (slot instanceof CreativeInventoryScreen.LockableSlot || !CONFIG_HOLDER.getConfig().dropDelay.enabled)
+            onMouseClick(slot, invSlot, button, slotActionType);
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -92,7 +93,7 @@ public abstract class MixinContainerScreen_DoDropDelay extends Screen implements
             ordinal = 1), locals = LocalCapture.CAPTURE_FAILHARD)
     public void dontdropit$renderDropProgress(MatrixStack matrices, int mouseX, int mouseY, float delta, CallbackInfo ci,
                                               int i, int j, int k, int l, int m, Slot slot) {
-        if (slot instanceof CreativeInventoryScreen.LockableSlot || !ModConfigHolder.getConfig().dropDelay.enabled)
+        if (slot instanceof CreativeInventoryScreen.LockableSlot || !CONFIG_HOLDER.getConfig().dropDelay.enabled)
             return;
         if (InputUtil.isKeyPressed(client.getWindow().getHandle(),
                 KeyBindingHelper.getBoundKeyOf(client.options.keyDrop).getCode())) {
@@ -107,12 +108,12 @@ public abstract class MixinContainerScreen_DoDropDelay extends Screen implements
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;enableDepthTest()V",
             ordinal = 1))
     public void dontdropit$renderDropTooltip(MatrixStack matrices, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        if (!playerInventory.getCursorStack().isEmpty() && dontdropit$isClickOutsideBounds(mouseX, mouseY, x, y, 0)) {
+        if (!playerInventory.getCursorStack().isEmpty() && isClickOutsideBounds(mouseX, mouseY, x, y, 0)) {
             boolean blocked = false;
             if (!(((Object) this) instanceof CreativeInventoryScreen)) {
                 blocked = !InputUtil.isKeyPressed(client.getWindow().getHandle(),
                     KeyBindingHelper.getBoundKeyOf(DontDropItMod.keyForceDrop).getCode());
-                switch (ModConfigHolder.getConfig().general.oobDropClickOverride) {
+                switch (CONFIG_HOLDER.getConfig().general.oobDropClickOverride) {
                 case FAVORITE_ITEMS:
                     if (FavoritesUtil.isStackFavorite(playerInventory.getCursorStack()))
                         break;

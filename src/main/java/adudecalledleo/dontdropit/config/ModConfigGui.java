@@ -15,11 +15,13 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
+import static adudecalledleo.dontdropit.DontDropItMod.CONFIG_HOLDER;
+
 public class ModConfigGui {
     public static ConfigBuilder getConfigBuilder() {
-        final ModConfig cfg = ModConfigHolder.getConfig();
+        final ModConfig cfg = CONFIG_HOLDER.getConfig();
         ConfigBuilder cb = ConfigBuilder.create().setTitle(t("title"));
-        cb.setSavingRunnable(ModConfigHolder::saveConfig);
+        cb.setSavingRunnable(CONFIG_HOLDER::saveConfig);
         addGeneralCategory(cfg, cb);
         addDropDelayCategory(cfg, cb);
         addFavoritesCategory(cfg, cb);

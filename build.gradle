@@ -20,6 +20,9 @@ configurations.all {
 
 repositories {
 	maven { url 'https://jitpack.io' }
+	maven {
+		url = "https://dl.bintray.com/adudecalledleo/mcmods.fabric"
+	}
 }
 
 dependencies {
@@ -34,6 +37,8 @@ dependencies {
 	include "me.shedaniel.cloth:config-2:${project.cloth_config_version}"
 	modImplementation "com.github.siphalor:amecs-api:${project.amecs_api_version}"
 	include "com.github.siphalor:amecs-api:${project.amecs_api_version}"
+	modImplementation "adudecalledleo.mcmods.fabric:lionutils:${project.lionutils_version}"
+	include "adudecalledleo.mcmods.fabric:lionutils:${project.lionutils_version}"
 }
 
 processResources {
