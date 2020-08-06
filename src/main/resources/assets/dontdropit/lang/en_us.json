@@ -4,6 +4,7 @@
   "dontdropit.tooltip.drop.allowed": "Click to drop item",
   "key.dontdropit.forceDrop": "Forcibly Drop Modifier",
   "key.dontdropit.dropStack": "Drop Entire Stack Modifier",
+  "key.dontdropit.toggleDropDelay": "Toggle Drop Delay",
   "dontdropit.config.enabled": "Enabled",
   "dontdropit.config.title": "Don't Drop It!",
   "dontdropit.config.category.general": "General",

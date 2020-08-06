@@ -23,6 +23,8 @@ public class DontDropItMod implements ClientModInitializer {
             GLFW.GLFW_KEY_LEFT_CONTROL, "key.categories.inventory");
     public static final KeyBinding keyForceDrop = new KeyBinding("key.dontdropit.forceDrop",
             GLFW.GLFW_KEY_LEFT_ALT, "key.categories.inventory");
+    public static final KeyBinding keyToggleDropDelay = new KeyBinding("key.dontdropit.toggleDropDelay",
+            GLFW.GLFW_KEY_UNKNOWN, "key.categories.inventory");
 
     @Override
     public void onInitializeClient() {
@@ -30,6 +32,7 @@ public class DontDropItMod implements ClientModInitializer {
         CONFIG_HOLDER.loadConfig();
         KeyBindingHelper.registerKeyBinding(keyDropStack);
         KeyBindingHelper.registerKeyBinding(keyForceDrop);
+        KeyBindingHelper.registerKeyBinding(keyToggleDropDelay);
         ClientTickEvents.END_CLIENT_TICK.register(DropHandler::onClientTick);
         LOGGER.info("Don't drop that Diamond Pickaxe!");
     }

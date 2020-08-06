@@ -59,8 +59,16 @@ public class DropHandler {
     private int dropDelayCounter = 0;
     private ItemStack currentStack = ItemStack.EMPTY;
     private boolean wasDropStackDown = false;
+    private boolean wasToggleDropDelayDown = false;
 
     public void tick(MinecraftClient mc, DropHandlerInterface dhi) {
+        if (dhi.isKeyDown(DontDropItMod.keyToggleDropDelay, mc)) {
+            if (!wasToggleDropDelayDown) {
+                wasToggleDropDelayDown = true;
+                CONFIG_HOLDER.getConfig().dropDelay.enabled = !CONFIG_HOLDER.getConfig().dropDelay.enabled;
+            }
+        } else
+            wasToggleDropDelayDown = false;
         if (CONFIG_HOLDER.getConfig().dropDelay.enabled) {
             if (dhi.isKeyDown(mc.options.keyDrop, mc)) {
                 if (dropDelayCounter < getDropDelayTicks()) {
