@@ -41,7 +41,7 @@ public class DropHandler {
     }
 
     public static int getDropDelayTicks() {
-        return CONFIG_HOLDER.getConfig().dropDelay.ticks;
+        return CONFIG_HOLDER.get().dropDelay.ticks;
     }
 
     public static int getTickCounter() {
@@ -65,11 +65,11 @@ public class DropHandler {
         if (dhi.isKeyDown(DontDropItMod.keyToggleDropDelay, mc)) {
             if (!wasToggleDropDelayDown) {
                 wasToggleDropDelayDown = true;
-                CONFIG_HOLDER.getConfig().dropDelay.enabled = !CONFIG_HOLDER.getConfig().dropDelay.enabled;
+                CONFIG_HOLDER.get().dropDelay.enabled = !CONFIG_HOLDER.get().dropDelay.enabled;
             }
         } else
             wasToggleDropDelayDown = false;
-        if (CONFIG_HOLDER.getConfig().dropDelay.enabled) {
+        if (CONFIG_HOLDER.get().dropDelay.enabled) {
             if (dhi.isKeyDown(mc.options.keyDrop, mc)) {
                 if (dropDelayCounter < getDropDelayTicks()) {
                     ItemStack stack = dhi.getCurrentStack(mc);
@@ -86,7 +86,7 @@ public class DropHandler {
                     currentStack = stack;
                     dropDelayCounter++;
                 } else {
-                    dropDelayCounter = CONFIG_HOLDER.getConfig().dropDelay.doDelayOnce ? getDropDelayTicks() : 0;
+                    dropDelayCounter = CONFIG_HOLDER.get().dropDelay.doDelayOnce ? getDropDelayTicks() : 0;
                     dhi.drop(wasDropStackDown, mc);
                 }
             } else

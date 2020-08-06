@@ -19,9 +19,9 @@ import static adudecalledleo.dontdropit.DontDropItMod.CONFIG_HOLDER;
 
 public class ModConfigGui {
     public static ConfigBuilder getConfigBuilder() {
-        final ModConfig cfg = CONFIG_HOLDER.getConfig();
+        final ModConfig cfg = CONFIG_HOLDER.get();
         ConfigBuilder cb = ConfigBuilder.create().setTitle(t("title"));
-        cb.setSavingRunnable(CONFIG_HOLDER::saveConfig);
+        cb.setSavingRunnable(CONFIG_HOLDER::save);
         addGeneralCategory(cfg, cb);
         addDropDelayCategory(cfg, cb);
         addFavoritesCategory(cfg, cb);

@@ -33,7 +33,7 @@ public class ModConfig {
     public static class Favorites {
         public Favorites() {
             items = new LinkedList<>();
-            enchantments = new LinkedList<>(ConfigUtil.getAllEnchantmentIds());
+            enchantments = ConfigUtil.getAllEnchantmentIds();
             tags = new LinkedList<>();
         }
 

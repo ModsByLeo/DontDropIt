@@ -40,7 +40,7 @@ public abstract class MixinInGameHud_RenderDropProgress extends DrawableHelper {
         RenderSystem.enableBlend();
         DropHandler.renderSlotFavoriteIcon(matrices, itemStack, i, j);
         RenderSystem.disableBlend();
-        if (!CONFIG_HOLDER.getConfig().dropDelay.enabled) {
+        if (!CONFIG_HOLDER.get().dropDelay.enabled) {
             RenderSystem.enableDepthTest();
             matrices.pop();
             return;

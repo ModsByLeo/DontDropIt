@@ -53,7 +53,7 @@ public abstract class MixinContainerScreen_DoDropDelay extends Screen implements
     @Inject(method = "onMouseClick", at = @At("HEAD"), cancellable = true)
     public void dontdropit$disableOOBClickDrop(Slot slot, int invSlot, int button, SlotActionType slotActionType, CallbackInfo ci) {
         if (slot == null && invSlot == -999 && slotActionType == SlotActionType.PICKUP) {
-            switch (CONFIG_HOLDER.getConfig().general.oobDropClickOverride) {
+            switch (CONFIG_HOLDER.get().general.oobDropClickOverride) {
             case FAVORITE_ITEMS:
                 if (!FavoritesUtil.isStackFavorite(playerInventory.getCursorStack()))
                     break;
@@ -84,7 +84,7 @@ public abstract class MixinContainerScreen_DoDropDelay extends Screen implements
     @Redirect(method = "keyPressed", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/ingame/HandledScreen;onMouseClick(Lnet/minecraft/screen/slot/Slot;IILnet/minecraft/screen/slot/SlotActionType;)V",
             ordinal = 1))
     public void dontdropit$disableDropKey(HandledScreen containerScreen, Slot slot, int invSlot, int button, SlotActionType slotActionType) {
-        if (slot instanceof CreativeInventoryScreen.LockableSlot || !CONFIG_HOLDER.getConfig().dropDelay.enabled)
+        if (slot instanceof CreativeInventoryScreen.LockableSlot || !CONFIG_HOLDER.get().dropDelay.enabled)
             onMouseClick(slot, invSlot, button, slotActionType);
     }
 
@@ -93,7 +93,7 @@ public abstract class MixinContainerScreen_DoDropDelay extends Screen implements
             ordinal = 1), locals = LocalCapture.CAPTURE_FAILHARD)
     public void dontdropit$renderDropProgress(MatrixStack matrices, int mouseX, int mouseY, float delta, CallbackInfo ci,
                                               int i, int j, int k, int l, int m, Slot slot) {
-        if (slot instanceof CreativeInventoryScreen.LockableSlot || !CONFIG_HOLDER.getConfig().dropDelay.enabled)
+        if (slot instanceof CreativeInventoryScreen.LockableSlot || !CONFIG_HOLDER.get().dropDelay.enabled)
             return;
         if (InputUtil.isKeyPressed(client.getWindow().getHandle(),
                 KeyBindingHelper.getBoundKeyOf(client.options.keyDrop).getCode())) {
@@ -113,7 +113,7 @@ public abstract class MixinContainerScreen_DoDropDelay extends Screen implements
             if (!(((Object) this) instanceof CreativeInventoryScreen)) {
                 blocked = !InputUtil.isKeyPressed(client.getWindow().getHandle(),
                     KeyBindingHelper.getBoundKeyOf(DontDropItMod.keyForceDrop).getCode());
-                switch (CONFIG_HOLDER.getConfig().general.oobDropClickOverride) {
+                switch (CONFIG_HOLDER.get().general.oobDropClickOverride) {
                 case FAVORITE_ITEMS:
                     if (FavoritesUtil.isStackFavorite(playerInventory.getCursorStack()))
                         break;

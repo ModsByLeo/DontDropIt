@@ -29,7 +29,7 @@ public class DontDropItMod implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         FavoritesUtil.addConfigListener();
-        CONFIG_HOLDER.loadConfig();
+        CONFIG_HOLDER.load();
         KeyBindingHelper.registerKeyBinding(keyDropStack);
         KeyBindingHelper.registerKeyBinding(keyForceDrop);
         KeyBindingHelper.registerKeyBinding(keyToggleDropDelay);

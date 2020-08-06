@@ -44,11 +44,11 @@ public class FavoritesUtil {
     }
 
     public static boolean isStackFavorite(ItemStack stack) {
-        if (!CONFIG_HOLDER.getConfig().favorites.enabled)
+        if (!CONFIG_HOLDER.get().favorites.enabled)
             return false;
         if (getFavoriteItems().contains(stack.getItem()))
             return true;
-        if (CONFIG_HOLDER.getConfig().favorites.enchIgnoreInvalidTargets) {
+        if (CONFIG_HOLDER.get().favorites.enchIgnoreInvalidTargets) {
             Set<Enchantment> enchantments = EnchantmentHelper.get(stack).keySet();
             for (Enchantment enchantment : enchantments) {
                 if (!enchantment.isAcceptableItem(stack))
