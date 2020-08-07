@@ -38,6 +38,7 @@ public class ModConfig {
         }
 
         public boolean enabled = true;
+        public boolean drawOverlay = true;
         public List<String> items;
         public List<String> enchantments;
         public boolean enchIgnoreInvalidTargets = true;

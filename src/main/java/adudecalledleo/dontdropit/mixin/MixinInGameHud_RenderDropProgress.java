@@ -37,15 +37,12 @@ public abstract class MixinInGameHud_RenderDropProgress extends DrawableHelper {
         RenderSystem.disableDepthTest();
         matrices.push();
         matrices.translate(0, 0, getZOffset());
-        RenderSystem.enableBlend();
-        DropHandler.renderSlotFavoriteIcon(matrices, itemStack, i, j);
-        RenderSystem.disableBlend();
-        if (!CONFIG_HOLDER.get().dropDelay.enabled) {
-            RenderSystem.enableDepthTest();
-            matrices.pop();
-            return;
+        if (CONFIG_HOLDER.get().favorites.drawOverlay) {
+            RenderSystem.enableBlend();
+            DropHandler.renderSlotFavoriteIcon(matrices, itemStack, i - 1, j - 1);
+            RenderSystem.disableBlend();
         }
-        if (client.options.keyDrop.isPressed()) {
+        if (CONFIG_HOLDER.get().dropDelay.enabled && client.options.keyDrop.isPressed()) {
             if (itemStack == playerEntity.inventory.getMainHandStack()) {
                 matrices.translate(0, 0, 1);
                 RenderSystem.colorMask(true, true, true, false);

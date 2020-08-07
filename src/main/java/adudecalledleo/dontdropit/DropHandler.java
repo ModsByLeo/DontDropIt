@@ -108,12 +108,12 @@ public class DropHandler {
                                               int x, int y) {
         if (FavoritesUtil.isStackFavorite(stack)) {
             MinecraftClient.getInstance().getTextureManager().bindTexture(TEX_FAVORITE);
-            DrawableHelper.drawTexture(matrices, x, y, 16, 16, 16, 16, 16, 16);
+            DrawableHelper.drawTexture(matrices, x, y, 18, 18, 18, 18, 18, 18);
         }
     }
 
     public static void renderSlotFavoriteIcon(MatrixStack matrices, Slot slot) {
-        renderSlotFavoriteIcon(matrices, slot.getStack(), slot.x, slot.y);
+        renderSlotFavoriteIcon(matrices, slot.getStack(), slot.x - 1, slot.y - 1);
     }
 
     public static void renderSlotProgressOverlay(MatrixStack matrices, ItemStack stack,

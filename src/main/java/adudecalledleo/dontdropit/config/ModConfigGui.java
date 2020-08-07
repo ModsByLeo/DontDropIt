@@ -98,6 +98,10 @@ public class ModConfigGui {
                 .setSaveConsumer(value -> cfg.favorites.enabled = value)
                 .setTooltipSupplier(tooltip(k("favorites.enabled.tooltip"), 2))
                 .setDefaultValue(DEFAULTS.favorites.enabled).build());
+        cFavorites.addEntry(eb.startBooleanToggle(t("favorites.draw_overlay"), cfg.favorites.drawOverlay)
+                .setSaveConsumer(value -> cfg.favorites.drawOverlay = value)
+                .setTooltipSupplier(tooltip(k("favorites.draw_overlay.tooltip"), 2))
+                .setDefaultValue(DEFAULTS.favorites.drawOverlay).build());
         cFavorites.addEntry(eb.startStrList(t("favorites.items"), cfg.favorites.items)
                 .setSaveConsumer(ConfigUtil.makeListSaveConsumer(cfg.favorites.items))
                 .setErrorSupplier(ConfigUtil::checkItemIdList)

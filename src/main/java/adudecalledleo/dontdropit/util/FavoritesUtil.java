@@ -7,6 +7,7 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.registry.Registry;
 
@@ -51,7 +52,7 @@ public class FavoritesUtil {
         if (CONFIG_HOLDER.get().favorites.enchIgnoreInvalidTargets) {
             Set<Enchantment> enchantments = EnchantmentHelper.get(stack).keySet();
             for (Enchantment enchantment : enchantments) {
-                if (!enchantment.isAcceptableItem(stack))
+                if (stack.getItem() != Items.ENCHANTED_BOOK && !enchantment.isAcceptableItem(stack))
                     continue;
                 if (getFavoriteEnchantments().contains(enchantment))
                     return true;

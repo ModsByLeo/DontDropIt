@@ -35,7 +35,6 @@
     "modupdater": "*"
   },
   "custom": {
-    "modmenu:clientsideOnly": true,
     "modupdater": {
       "strategy": "curseforge",
       "projectID": 390383

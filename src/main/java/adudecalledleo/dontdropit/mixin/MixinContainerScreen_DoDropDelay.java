@@ -39,6 +39,17 @@ public abstract class MixinContainerScreen_DoDropDelay extends Screen implements
         throw new RuntimeException("This shouldn't be invoked...");
     }
 
+    @Override
+    @Accessor
+    public abstract Slot getFocusedSlot();
+
+    @Override
+    public void drop(boolean entireStack) {
+        if (getFocusedSlot() == null)
+            return;
+        onMouseClick(getFocusedSlot(), getFocusedSlot().id, entireStack ? 1 : 0, SlotActionType.THROW);
+    }
+
     @Shadow
     protected abstract void onMouseClick(Slot slot, int invSlot, int button, SlotActionType slotActionType);
 
@@ -67,17 +78,6 @@ public abstract class MixinContainerScreen_DoDropDelay extends Screen implements
                 break;
             }
         }
-    }
-
-    @Override
-    @Accessor
-    public abstract Slot getFocusedSlot();
-
-    @Override
-    public void drop(boolean entireStack) {
-        if (getFocusedSlot() == null)
-            return;
-        onMouseClick(getFocusedSlot(), getFocusedSlot().id, entireStack ? 1 : 0, SlotActionType.THROW);
     }
 
     @SuppressWarnings("rawtypes")
@@ -136,12 +136,13 @@ public abstract class MixinContainerScreen_DoDropDelay extends Screen implements
     @Inject(method = "drawSlot", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/ingame/HandledScreen;setZOffset(I)V",
             ordinal = 1))
     public void dontdropit$renderFavoriteIcon(MatrixStack matrices, Slot slot, CallbackInfo ci) {
-        if (slot instanceof CreativeInventoryScreen.LockableSlot)
+        if (!CONFIG_HOLDER.get().favorites.drawOverlay || slot instanceof CreativeInventoryScreen.LockableSlot)
             return;
-        RenderSystem.disableDepthTest();
         matrices.push();
         matrices.translate(0, 0, getZOffset());
+        RenderSystem.disableDepthTest();
         RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
         DropHandler.renderSlotFavoriteIcon(matrices, slot);
         RenderSystem.disableBlend();
         RenderSystem.enableDepthTest();
