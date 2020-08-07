@@ -22,7 +22,7 @@ public class ContainerScreenDropHandlerInterface implements DropHandlerInterface
     @Override
     public boolean isKeyDown(KeyBinding keyBinding, MinecraftClient mc) {
         // KeyBindings aren't updated when in a Screen, so we need to manually check the key's state
-        return InputUtil.isKeyPressed(mc.getWindow().getHandle(),
+        return !keyBinding.isUnbound() && InputUtil.isKeyPressed(mc.getWindow().getHandle(),
                 KeyBindingHelper.getBoundKeyOf(keyBinding).getCode());
     }
 

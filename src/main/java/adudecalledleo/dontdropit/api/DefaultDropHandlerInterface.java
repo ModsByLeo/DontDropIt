@@ -13,7 +13,7 @@ public class DefaultDropHandlerInterface implements DropHandlerInterface {
 
     @Override
     public boolean isKeyDown(KeyBinding keyBinding, MinecraftClient mc) {
-        return keyBinding.isPressed();
+        return !keyBinding.isUnbound() && keyBinding.isPressed();
     }
 
     @SuppressWarnings("ConstantConditions")
