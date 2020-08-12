@@ -20,11 +20,11 @@ public class DontDropItMod implements ClientModInitializer {
             ModConfig::new, ConfigHolder.createExceptionHandler(LOGGER));
 
     public static final KeyBinding keyDropStack = new KeyBinding("key.dontdropit.dropStack",
-            GLFW.GLFW_KEY_LEFT_CONTROL, "key.categories.inventory");
+            GLFW.GLFW_KEY_LEFT_CONTROL, "key.categories.dontdropit");
     public static final KeyBinding keyForceDrop = new KeyBinding("key.dontdropit.forceDrop",
-            GLFW.GLFW_KEY_LEFT_ALT, "key.categories.inventory");
+            GLFW.GLFW_KEY_LEFT_ALT, "key.categories.dontdropit");
     public static final KeyBinding keyToggleDropDelay = new KeyBinding("key.dontdropit.toggleDropDelay",
-            GLFW.GLFW_KEY_UNKNOWN, "key.categories.inventory");
+            GLFW.GLFW_KEY_UNKNOWN, "key.categories.dontdropit");
 
     @Override
     public void onInitializeClient() {

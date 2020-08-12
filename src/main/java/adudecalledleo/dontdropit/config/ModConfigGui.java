@@ -102,23 +102,18 @@ public class ModConfigGui {
                 .setSaveConsumer(value -> cfg.favorites.drawOverlay = value)
                 .setTooltipSupplier(tooltip(k("favorites.draw_overlay.tooltip"), 2))
                 .setDefaultValue(DEFAULTS.favorites.drawOverlay).build());
-        cFavorites.addEntry(eb.startStrList(t("favorites.items"), cfg.favorites.items)
-                .setSaveConsumer(ConfigUtil.makeListSaveConsumer(cfg.favorites.items))
-                .setErrorSupplier(ConfigUtil::checkItemIdList)
-                .setTooltipSupplier(tooltip(k("favorites.items.tooltip"), k("favorites.tooltip")))
-                .setDefaultValue(DEFAULTS.favorites.items).build());
-        cFavorites.addEntry(eb.startStrList(t("favorites.enchantments"), cfg.favorites.enchantments)
-                .setSaveConsumer(ConfigUtil.makeListSaveConsumer(cfg.favorites.enchantments))
-                .setErrorSupplier(ConfigUtil::checkEnchantmentIdList)
-                .setTooltipSupplier(tooltip(k("favorites.enchantments.tooltip"), k("favorites.tooltip")))
-                .setDefaultValue(DEFAULTS.favorites.enchantments).build());
+        cFavorites.addEntry(ConfigUtil.startIdList(eb, t("favorites.items"),
+                cfg.favorites.items, DEFAULTS.favorites.items, ConfigUtil::checkItemIdList)
+                .setTooltipSupplier(tooltip(k("favorites.items.tooltip"), k("favorites.tooltip"))).build());
+        cFavorites.addEntry(ConfigUtil.startIdList(eb, t("favorites.enchantments"),
+                cfg.favorites.enchantments, DEFAULTS.favorites.enchantments, ConfigUtil::checkEnchantmentIdList)
+                .setTooltipSupplier(tooltip(k("favorites.enchantments.tooltip"), k("favorites.tooltip"))).build());
         cFavorites.addEntry(eb.startBooleanToggle(t("favorites.enchantments.ignore_invalid_targets"), cfg.favorites.enchIgnoreInvalidTargets)
                 .setSaveConsumer(value -> cfg.favorites.enchIgnoreInvalidTargets = value)
                 .setTooltipSupplier(tooltip(k("favorites.enchantments.ignore_invalid_targets.tooltip"), 2))
                 .setDefaultValue(DEFAULTS.favorites.enchIgnoreInvalidTargets).build());
-        cFavorites.addEntry(eb.startStrList(t("favorites.tags"), cfg.favorites.tags)
-                .setSaveConsumer(ConfigUtil.makeListSaveConsumer(cfg.favorites.tags))
-                .setTooltipSupplier(tooltip(k("favorites.tags.tooltip"), k("favorites.tooltip")))
-                .setDefaultValue(DEFAULTS.favorites.tags).build());
+        cFavorites.addEntry(ConfigUtil.startIdList(eb, t("favorites.tags"),
+                cfg.favorites.tags, DEFAULTS.favorites.tags)
+                .setTooltipSupplier(tooltip(k("favorites.tags.tooltip"), k("favorites.tooltip"))).build());
     }
 }

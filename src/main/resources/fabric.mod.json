@@ -32,7 +32,8 @@
     "fabric": "*"
   },
   "suggests": {
-    "modupdater": "*"
+    "modupdater": "*",
+    "amecs": "*"
   },
   "custom": {
     "modupdater": {

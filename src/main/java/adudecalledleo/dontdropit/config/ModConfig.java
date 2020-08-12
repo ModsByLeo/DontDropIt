@@ -1,6 +1,7 @@
 package adudecalledleo.dontdropit.config;
 
 import adudecalledleo.dontdropit.util.ConfigUtil;
+import net.minecraft.util.Identifier;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -39,10 +40,10 @@ public class ModConfig {
 
         public boolean enabled = true;
         public boolean drawOverlay = true;
-        public List<String> items;
-        public List<String> enchantments;
+        public List<Identifier> items;
+        public List<Identifier> enchantments;
         public boolean enchIgnoreInvalidTargets = true;
-        public List<String> tags;
+        public List<Identifier> tags;
     }
 
     public Favorites favorites;

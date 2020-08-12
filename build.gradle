@@ -15,7 +15,6 @@ minecraft {
 }
 
 repositories {
-	maven { url 'https://jitpack.io' }
 	maven { url "https://dl.bintray.com/adudecalledleo/mcmods.fabric" }
 }
 
@@ -45,11 +44,14 @@ dependencies {
 
 	depApi "io.github.prospector:modmenu:${project.modmenu_version}"
 	depApi("me.shedaniel.cloth:config-2:${project.cloth_config_version}", true)
-	depApi("com.github.siphalor:amecs-api:${project.amecs_api_version}", true)
 	depApi("adudecalledleo.mcmods.fabric:lionutils:${project.lionutils_version}", true)
 }
 
 if (Boolean.valueOf(project.use_runtime_deps)) {
+	repositories {
+		maven { url 'https://jitpack.io' }
+	}
+
 	dependencies {
 		// DataBreaker applies a number of patches to eliminate the loading of data fixers
 		// This greatly reduces the amount of time needed to start the game, but is generally unsafe in production

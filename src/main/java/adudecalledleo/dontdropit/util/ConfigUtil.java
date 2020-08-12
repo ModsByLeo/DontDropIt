@@ -1,5 +1,7 @@
 package adudecalledleo.dontdropit.util;
 
+import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
+import me.shedaniel.clothconfig2.impl.builders.StringListBuilder;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
@@ -21,46 +23,60 @@ public class ConfigUtil {
         };
     }
 
-    private static List<String> enchIds;
+    private static List<Identifier> enchIds;
 
     @SuppressWarnings("ConstantConditions")
-    public static List<String> getAllEnchantmentIds() {
+    public static List<Identifier> getAllEnchantmentIds() {
         if (enchIds == null) {
             enchIds = new LinkedList<>();
             for (Identifier enchId : Registry.ENCHANTMENT.getIds())
                 if (!Registry.ENCHANTMENT.get(enchId).isCursed())
-                    enchIds.add(enchId.toString());
+                    enchIds.add(enchId);
         }
         return new LinkedList<>(enchIds);
     }
 
-    public static <T> Optional<Text> checkIdList(List<String> idList, Registry<T> registry, String errI18n) {
-        for (String id : idList) {
-            Identifier idObj = new Identifier(id);
-            if (!registry.containsId(idObj))
-                return Optional.of(new TranslatableText(errI18n, id));
+    public static StringListBuilder startIdList(ConfigEntryBuilder eb, Text name, List<Identifier> list, List<Identifier> defaultList,
+            Function<List<Identifier>, Optional<Text>> errorSupplier) {
+        List<String> dList = list.stream().map(Identifier::toString).collect(Collectors.toList());
+        List<String> defaultDList = defaultList.stream().map(Identifier::toString).collect(Collectors.toList());
+        StringListBuilder slb = eb.startStrList(name, dList)
+                .setSaveConsumer(strList -> {
+                    list.clear();
+                    strList.stream().map(Identifier::new).forEach(list::add);
+                })
+                .setDefaultValue(defaultDList);
+        if (errorSupplier != null)
+            slb.setErrorSupplier(strList -> errorSupplier.apply(strList.stream().map(Identifier::new).collect(Collectors.toList())));
+        return slb;
+    }
+
+    public static StringListBuilder startIdList(ConfigEntryBuilder eb, Text name, List<Identifier> list, List<Identifier> defaultList) {
+        return startIdList(eb, name, list, defaultList, null);
+    }
+
+    public static <T> Optional<Text> checkIdList(List<Identifier> idList, Registry<T> registry, String errI18n) {
+        for (Identifier id : idList) {
+            if (!registry.containsId(id))
+                return Optional.of(new TranslatableText(errI18n, id.toString()));
         }
         return Optional.empty();
     }
 
-    public static Optional<Text> checkItemIdList(List<String> idList) {
+    public static Optional<Text> checkItemIdList(List<Identifier> idList) {
         return checkIdList(idList, Registry.ITEM, "dontdropit.config.favorites.items.error.bad_id");
     }
 
-    public static Optional<Text> checkEnchantmentIdList(List<String> idList) {
+    public static Optional<Text> checkEnchantmentIdList(List<Identifier> idList) {
         return checkIdList(idList, Registry.ENCHANTMENT, "dontdropit.config.favorites.enchantments.error.bad_id");
     }
 
-    public static <T1, T2, R> Function<T1, R> composeMappers(Function<T1, T2> map1, Function<T2, R> map2) {
-        return key -> map2.apply(map1.apply(key));
-    }
-
-    public static <T> List<T> getAllFromRegistry(List<String> idList, Function<Identifier, T> registryGetter) {
-        return idList.stream().map(composeMappers(Identifier::new, registryGetter)).filter(Objects::nonNull)
+    public static <T> List<T> getAllFromRegistry(List<Identifier> idList, Function<Identifier, T> registryGetter) {
+        return idList.stream().map(registryGetter).filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 
-    public static <T> List<T> getAllFromRegistry(List<String> idList, Registry<T> registry) {
+    public static <T> List<T> getAllFromRegistry(List<Identifier> idList, Registry<T> registry) {
         return getAllFromRegistry(idList, registry::get);
     }
 }
