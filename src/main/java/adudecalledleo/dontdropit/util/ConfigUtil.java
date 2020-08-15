@@ -38,14 +38,14 @@ public class ConfigUtil {
             if (!Identifier.isValid(str))
                 return Optional.of(str);
         dst.clear();
-        src.stream().map(Identifier::new).forEach(dst::add);
+        src.stream().map(Identifier::tryParse).filter(Objects::nonNull).forEach(dst::add);
         return Optional.empty();
     }
 
     public static StringListBuilder startIdList(ConfigEntryBuilder eb, Text name, List<Identifier> list, List<Identifier> defaultList,
             Function<List<Identifier>, Optional<Text>> errorSupplier) {
-        List<String> dList = list.stream().map(Identifier::toString).collect(Collectors.toList());
-        List<String> defaultDList = defaultList.stream().map(Identifier::toString).collect(Collectors.toList());
+        List<String> dList = list.stream().map(String::valueOf).collect(Collectors.toList());
+        List<String> defaultDList = defaultList.stream().map(String::valueOf).collect(Collectors.toList());
         StringListBuilder slb = eb.startStrList(name, dList)
                 .setSaveConsumer(strList -> safeIdToString(strList, list))
                 .setDefaultValue(defaultDList);
@@ -67,6 +67,8 @@ public class ConfigUtil {
 
     public static <T> Optional<Text> checkIdList(List<Identifier> idList, Registry<T> registry, String errI18n) {
         for (Identifier id : idList) {
+            if (id == null)
+                continue;
             if (!registry.containsId(id))
                 return Optional.of(new TranslatableText(errI18n, id.toString()));
         }

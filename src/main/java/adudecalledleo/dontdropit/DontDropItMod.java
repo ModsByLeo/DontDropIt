@@ -17,7 +17,7 @@ public class DontDropItMod implements ClientModInitializer {
 
     public static Logger LOGGER = LoggerUtil.getLogger(MOD_NAME);
     public static final ConfigHolder<ModConfig> CONFIG_HOLDER = ConfigHolder.create(MOD_ID, ModConfig.class,
-            ModConfig::new, ConfigHolder.createExceptionHandler(LOGGER));
+            ModConfig::new, LOGGER);
 
     public static final KeyBinding keyDropStack = new KeyBinding("key.dontdropit.dropStack",
             GLFW.GLFW_KEY_LEFT_CONTROL, "key.categories.dontdropit");
