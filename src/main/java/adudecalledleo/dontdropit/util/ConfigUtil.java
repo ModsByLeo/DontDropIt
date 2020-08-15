@@ -7,10 +7,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -36,18 +33,31 @@ public class ConfigUtil {
         return new LinkedList<>(enchIds);
     }
 
+    private static Optional<String> safeIdToString(List<String> src, List<Identifier> dst) {
+        for (String str : src)
+            if (!Identifier.isValid(str))
+                return Optional.of(str);
+        dst.clear();
+        src.stream().map(Identifier::new).forEach(dst::add);
+        return Optional.empty();
+    }
+
     public static StringListBuilder startIdList(ConfigEntryBuilder eb, Text name, List<Identifier> list, List<Identifier> defaultList,
             Function<List<Identifier>, Optional<Text>> errorSupplier) {
         List<String> dList = list.stream().map(Identifier::toString).collect(Collectors.toList());
         List<String> defaultDList = defaultList.stream().map(Identifier::toString).collect(Collectors.toList());
         StringListBuilder slb = eb.startStrList(name, dList)
-                .setSaveConsumer(strList -> {
-                    list.clear();
-                    strList.stream().map(Identifier::new).forEach(list::add);
-                })
+                .setSaveConsumer(strList -> safeIdToString(strList, list))
                 .setDefaultValue(defaultDList);
-        if (errorSupplier != null)
-            slb.setErrorSupplier(strList -> errorSupplier.apply(strList.stream().map(Identifier::new).collect(Collectors.toList())));
+        slb.setErrorSupplier(strList -> {
+            List<Identifier> values = new ArrayList<>();
+            Optional<String> result = safeIdToString(strList, values);
+            if (result.isPresent())
+                return Optional.of(new TranslatableText("dontdropit.config.bad_id", result.get()));
+            if (errorSupplier != null)
+                return errorSupplier.apply(values);
+            return Optional.empty();
+        });
         return slb;
     }
 

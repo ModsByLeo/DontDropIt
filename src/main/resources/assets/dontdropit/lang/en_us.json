@@ -7,6 +7,7 @@
   "key.dontdropit.dropStack": "Drop Entire Stack Modifier",
   "key.dontdropit.toggleDropDelay": "Toggle Drop Delay",
   "dontdropit.config.enabled": "Enabled",
+  "dontdropit.config.bad_id": "Invalid identifier \"%s\"",
   "dontdropit.config.title": "Don't Drop It! Configuration",
   "dontdropit.config.category.general": "General",
   "dontdropit.config.general.oob_click_drop_behavior": "OOB Click Drop Behavior",
