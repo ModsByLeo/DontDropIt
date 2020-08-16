@@ -35,6 +35,8 @@ public class FavoritesUtil {
     }
 
     private static void updateFavoriteLists(ConfigHolder.Phase phase, ModConfig config) {
+        if (config == null || phase == ConfigHolder.Phase.PRE_LOAD)
+            return;
         favoriteItems = ConfigUtil.getAllFromRegistry(config.favorites.items, Registry.ITEM);
         favoriteEnchantments = ConfigUtil.getAllFromRegistry(config.favorites.enchantments, Registry.ENCHANTMENT);
         favoriteTags = ConfigUtil.getAllFromRegistry(config.favorites.tags, TagRegistry::item);
