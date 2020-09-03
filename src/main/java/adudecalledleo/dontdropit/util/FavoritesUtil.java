@@ -1,7 +1,7 @@
 package adudecalledleo.dontdropit.util;
 
 import adudecalledleo.dontdropit.config.ModConfig;
-import adudecalledleo.lionutils.ConfigHolder;
+import adudecalledleo.lionutils.config.ConfigHolder;
 import net.fabricmc.fabric.api.tag.TagRegistry;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -34,8 +34,8 @@ public class FavoritesUtil {
         return favoriteTags;
     }
 
-    private static void updateFavoriteLists(ConfigHolder.Phase phase, ModConfig config) {
-        if (config == null || phase == ConfigHolder.Phase.PRE_LOAD)
+    private static void updateFavoriteLists(ConfigHolder.Event event, ModConfig config) {
+        if (config == null || event == ConfigHolder.Event.LOAD)
             return;
         favoriteItems = ConfigUtil.getAllFromRegistry(config.favorites.items, Registry.ITEM);
         favoriteEnchantments = ConfigUtil.getAllFromRegistry(config.favorites.enchantments, Registry.ENCHANTMENT);

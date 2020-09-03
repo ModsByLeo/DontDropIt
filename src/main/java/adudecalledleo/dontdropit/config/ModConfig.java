@@ -1,12 +1,13 @@
 package adudecalledleo.dontdropit.config;
 
 import adudecalledleo.dontdropit.util.ConfigUtil;
+import adudecalledleo.lionutils.config.AbstractConfig;
 import net.minecraft.util.Identifier;
 
 import java.util.LinkedList;
 import java.util.List;
 
-public class ModConfig {
+public class ModConfig extends AbstractConfig {
     public ModConfig() {
         general = new General();
         dropDelay = new DropDelay();
