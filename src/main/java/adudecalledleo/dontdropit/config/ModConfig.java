@@ -15,11 +15,12 @@ public class ModConfig extends AbstractConfig {
     }
 
     public static class General {
-        public enum OOBClickDropOverride {
+        public enum DropBehaviorOverride {
             FAVORITE_ITEMS, ALL_ITEMS, DISABLED
         }
 
-        public OOBClickDropOverride oobDropClickOverride = OOBClickDropOverride.FAVORITE_ITEMS;
+        public DropBehaviorOverride oobDropClickOverride = DropBehaviorOverride.FAVORITE_ITEMS;
+        public DropBehaviorOverride cursorCloseDropOverride = DropBehaviorOverride.ALL_ITEMS;
     }
 
     public General general;
@@ -40,6 +41,7 @@ public class ModConfig extends AbstractConfig {
         }
 
         public boolean enabled = true;
+        public boolean disableShiftClick = false;
         public boolean drawOverlay = true;
         public List<Identifier> items;
         public List<Identifier> enchantments;

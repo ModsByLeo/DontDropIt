@@ -11,6 +11,7 @@ import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
@@ -63,19 +64,35 @@ public abstract class MixinContainerScreen_DoDropDelay extends Screen implements
 
     @Inject(method = "onMouseClick", at = @At("HEAD"), cancellable = true)
     public void dontdropit$disableOOBClickDrop(Slot slot, int invSlot, int button, SlotActionType slotActionType, CallbackInfo ci) {
-        if (slot == null && invSlot == -999 && slotActionType == SlotActionType.PICKUP) {
-            switch (CONFIG_HOLDER.get().general.oobDropClickOverride) {
-            case FAVORITE_ITEMS:
-                if (!FavoritesUtil.isStackFavorite(playerInventory.getCursorStack()))
+        DontDropItMod.LOGGER.info("[onMouseClick] slot = {}, invSlot = {}, button = {}, slotActionType = {}",
+                slot, invSlot, button, slotActionType);
+        boolean forceDrop = KeyBindingUtil.isDown(client, DontDropItMod.keyForceDrop);
+        switch (slotActionType) {
+        case PICKUP:
+            if (slot == null && invSlot == -999) {
+                switch (CONFIG_HOLDER.get().general.oobDropClickOverride) {
+                case FAVORITE_ITEMS:
+                    if (!FavoritesUtil.isStackFavorite(playerInventory.getCursorStack()))
+                        break;
+                case ALL_ITEMS:
+                    if (forceDrop)
+                        break;
+                    ci.cancel();
                     break;
-            case ALL_ITEMS:
-                if (KeyBindingUtil.isDown(client, DontDropItMod.keyForceDrop))
+                case DISABLED:
                     break;
-                ci.cancel();
-                break;
-            case DISABLED:
-                break;
+                }
             }
+        case QUICK_MOVE:
+            if (slot == null)
+                return;
+            ItemStack stack = slot.getStack();
+            if (CONFIG_HOLDER.get().favorites.disableShiftClick
+                    && !forceDrop
+                    && Screen.hasShiftDown() // you'd think this would be implied by QUICK_MOVE but /shrug
+                    && FavoritesUtil.isStackFavorite(stack))
+                ci.cancel();
+            break;
         }
     }
 
@@ -85,6 +102,28 @@ public abstract class MixinContainerScreen_DoDropDelay extends Screen implements
     public void dontdropit$disableDropKey(HandledScreen containerScreen, Slot slot, int invSlot, int button, SlotActionType slotActionType) {
         if (slot instanceof CreativeInventoryScreen.LockableSlot || !CONFIG_HOLDER.get().dropDelay.enabled)
             onMouseClick(slot, invSlot, button, slotActionType);
+    }
+
+    @Inject(method = "onClose", at = @At(value = "HEAD"))
+    public void dontdropit$disableCursorCloseDrop(CallbackInfo ci) {
+        ItemStack cursorStack = playerInventory.getCursorStack();
+        if (cursorStack.isEmpty())
+            return;
+        switch (CONFIG_HOLDER.get().general.cursorCloseDropOverride) {
+        case FAVORITE_ITEMS:
+            if (!FavoritesUtil.isStackFavorite(cursorStack))
+                return;
+        case ALL_ITEMS:
+            break;
+        case DISABLED:
+            return;
+        }
+        int targetSlot = playerInventory.getOccupiedSlotWithRoomForStack(cursorStack);
+        if (targetSlot == -1)
+            targetSlot = playerInventory.getEmptySlot();
+        // if we have a slot where the cursor stack can be placed, put it there
+        if (targetSlot != -1)
+            onMouseClick(null, targetSlot, 0, SlotActionType.PICKUP);
     }
 
     @SuppressWarnings("ConstantConditions")

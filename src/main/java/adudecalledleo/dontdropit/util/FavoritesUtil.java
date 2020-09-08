@@ -47,7 +47,7 @@ public class FavoritesUtil {
     }
 
     public static boolean isStackFavorite(ItemStack stack) {
-        if (!CONFIG_HOLDER.get().favorites.enabled)
+        if (stack.isEmpty() || !CONFIG_HOLDER.get().favorites.enabled)
             return false;
         if (getFavoriteItems().contains(stack.getItem()))
             return true;

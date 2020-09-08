@@ -31,10 +31,9 @@ public class ModConfigGui {
     private static final ModConfig DEFAULTS = new ModConfig();
 
     @SuppressWarnings("rawtypes")
-    private static final Function<Enum, Text> OOB_DROP_CLICK_OVERRIDE_NAME_PROVIDER = value -> {
-        MutableText text = new TranslatableText(k("general.oob_click_drop_behavior." + value.toString()
-                                                                                            .toLowerCase()));
-        if (value == ModConfig.General.OOBClickDropOverride.DISABLED)
+    private static final Function<Enum, Text> DROP_BEHAVIOR_OVERRIDE_NAME_PROVIDER = value -> {
+        MutableText text = new TranslatableText(k("general.drop_behavior." + value.toString().toLowerCase()));
+        if (value == ModConfig.General.DropBehaviorOverride.DISABLED)
             text = text.formatted(Formatting.RED);
         return text;
     };
@@ -67,11 +66,17 @@ public class ModConfigGui {
         ConfigEntryBuilder eb = cb.entryBuilder();
         ConfigCategory cGeneral = cb.getOrCreateCategory(t("category.general"));
         cGeneral.addEntry(eb.startEnumSelector(t("general.oob_click_drop_behavior"),
-                ModConfig.General.OOBClickDropOverride.class, cfg.general.oobDropClickOverride)
+                ModConfig.General.DropBehaviorOverride.class, cfg.general.oobDropClickOverride)
                 .setSaveConsumer(value -> cfg.general.oobDropClickOverride = value)
-                .setEnumNameProvider(OOB_DROP_CLICK_OVERRIDE_NAME_PROVIDER)
+                .setEnumNameProvider(DROP_BEHAVIOR_OVERRIDE_NAME_PROVIDER)
                 .setTooltipSupplier(tooltip(k("general.oob_click_drop_behavior.tooltip"), 2))
                 .setDefaultValue(DEFAULTS.general.oobDropClickOverride).build());
+        cGeneral.addEntry(eb.startEnumSelector(t("general.cursor_close_drop_behavior"),
+                ModConfig.General.DropBehaviorOverride.class, cfg.general.cursorCloseDropOverride)
+                .setSaveConsumer(value -> cfg.general.cursorCloseDropOverride = value)
+                .setEnumNameProvider(DROP_BEHAVIOR_OVERRIDE_NAME_PROVIDER)
+                .setTooltipSupplier(tooltip(k("general.cursor_close_drop_behavior.tooltip"), 2))
+                .setDefaultValue(DEFAULTS.general.cursorCloseDropOverride).build());
     }
 
     private static void addDropDelayCategory(ModConfig cfg, ConfigBuilder cb) {
@@ -83,11 +88,11 @@ public class ModConfigGui {
                 .setDefaultValue(DEFAULTS.dropDelay.enabled).build());
         cDropDelay.addEntry(eb.startIntSlider(t("drop_delay.ticks"), cfg.dropDelay.ticks, 5, 100)
                 .setSaveConsumer(value -> cfg.dropDelay.ticks = value)
-                .setTooltipSupplier(tooltip(k("drop_delay.ticks.tooltip"), 2))
+                .setTooltipSupplier(tooltip(k("drop_delay.ticks.tooltip"), 3))
                 .setDefaultValue(DEFAULTS.dropDelay.ticks).build());
         cDropDelay.addEntry(eb.startBooleanToggle(t("drop_delay.do_delay_once"), cfg.dropDelay.doDelayOnce)
                 .setSaveConsumer(value -> cfg.dropDelay.doDelayOnce = value)
-                .setTooltipSupplier(tooltip(k("drop_delay.do_delay_once.tooltip"), 2))
+                .setTooltipSupplier(tooltip(k("drop_delay.do_delay_once.tooltip"), 3))
                 .setDefaultValue(DEFAULTS.dropDelay.doDelayOnce).build());
     }
 
@@ -98,6 +103,10 @@ public class ModConfigGui {
                 .setSaveConsumer(value -> cfg.favorites.enabled = value)
                 .setTooltipSupplier(tooltip(k("favorites.enabled.tooltip"), 2))
                 .setDefaultValue(DEFAULTS.favorites.enabled).build());
+        cFavorites.addEntry(eb.startBooleanToggle(t("favorites.disable_shift_click"), cfg.favorites.disableShiftClick)
+                .setSaveConsumer(value -> cfg.favorites.disableShiftClick = value)
+                .setTooltipSupplier(tooltip(k("favorites.disable_shift_click.tooltip"), 2))
+                .setDefaultValue(DEFAULTS.favorites.disableShiftClick).build());
         cFavorites.addEntry(eb.startBooleanToggle(t("favorites.draw_overlay"), cfg.favorites.drawOverlay)
                 .setSaveConsumer(value -> cfg.favorites.drawOverlay = value)
                 .setTooltipSupplier(tooltip(k("favorites.draw_overlay.tooltip"), 2))
