@@ -1,10 +1,9 @@
 package adudecalledleo.dontdropit.api;
 
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import adudecalledleo.dontdropit.KeyBindingUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.options.KeyBinding;
-import net.minecraft.client.util.InputUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
 
@@ -22,8 +21,7 @@ public class ContainerScreenDropHandlerInterface implements DropHandlerInterface
     @Override
     public boolean isKeyDown(KeyBinding keyBinding, MinecraftClient mc) {
         // KeyBindings aren't updated when in a Screen, so we need to manually check the key's state
-        return !keyBinding.isUnbound() && InputUtil.isKeyPressed(mc.getWindow().getHandle(),
-                KeyBindingHelper.getBoundKeyOf(keyBinding).getCode());
+        return KeyBindingUtil.isDown(mc, keyBinding);
     }
 
     @Override

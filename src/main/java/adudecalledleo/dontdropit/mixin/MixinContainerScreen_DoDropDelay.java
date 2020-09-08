@@ -2,14 +2,13 @@ package adudecalledleo.dontdropit.mixin;
 
 import adudecalledleo.dontdropit.DontDropItMod;
 import adudecalledleo.dontdropit.DropHandler;
+import adudecalledleo.dontdropit.KeyBindingUtil;
 import adudecalledleo.dontdropit.api.ContainerScreenExtensions;
 import adudecalledleo.dontdropit.util.FavoritesUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.slot.Slot;
@@ -20,6 +19,7 @@ import net.minecraft.util.Formatting;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -44,7 +44,7 @@ public abstract class MixinContainerScreen_DoDropDelay extends Screen implements
     public abstract Slot getFocusedSlot();
 
     @Override
-    public void drop(boolean entireStack) {
+    @Unique public void drop(boolean entireStack) {
         Slot focusedSlot = getFocusedSlot();
         if (focusedSlot == null)
             return;
@@ -61,7 +61,6 @@ public abstract class MixinContainerScreen_DoDropDelay extends Screen implements
     @Shadow protected int y;
     @Shadow @Final protected PlayerInventory playerInventory;
 
-    @SuppressWarnings("ConstantConditions")
     @Inject(method = "onMouseClick", at = @At("HEAD"), cancellable = true)
     public void dontdropit$disableOOBClickDrop(Slot slot, int invSlot, int button, SlotActionType slotActionType, CallbackInfo ci) {
         if (slot == null && invSlot == -999 && slotActionType == SlotActionType.PICKUP) {
@@ -70,8 +69,7 @@ public abstract class MixinContainerScreen_DoDropDelay extends Screen implements
                 if (!FavoritesUtil.isStackFavorite(playerInventory.getCursorStack()))
                     break;
             case ALL_ITEMS:
-                if (InputUtil.isKeyPressed(client.getWindow().getHandle(),
-                        KeyBindingHelper.getBoundKeyOf(DontDropItMod.keyForceDrop).getCode()))
+                if (KeyBindingUtil.isDown(client, DontDropItMod.keyForceDrop))
                     break;
                 ci.cancel();
                 break;
@@ -96,8 +94,7 @@ public abstract class MixinContainerScreen_DoDropDelay extends Screen implements
                                               int i, int j, int k, int l, int m, Slot slot) {
         if (slot instanceof CreativeInventoryScreen.LockableSlot || !CONFIG_HOLDER.get().dropDelay.enabled)
             return;
-        if (InputUtil.isKeyPressed(client.getWindow().getHandle(),
-                KeyBindingHelper.getBoundKeyOf(client.options.keyDrop).getCode())) {
+        if (KeyBindingUtil.isDown(client, client.options.keyDrop)) {
             matrices.push();
             matrices.translate(0, 0, getZOffset() + 1);
             DropHandler.renderSlotProgressOverlay(matrices, slot);
@@ -112,8 +109,7 @@ public abstract class MixinContainerScreen_DoDropDelay extends Screen implements
         if (!playerInventory.getCursorStack().isEmpty() && isClickOutsideBounds(mouseX, mouseY, x, y, 0)) {
             boolean blocked = false;
             if (!(((Object) this) instanceof CreativeInventoryScreen)) {
-                blocked = !InputUtil.isKeyPressed(client.getWindow().getHandle(),
-                    KeyBindingHelper.getBoundKeyOf(DontDropItMod.keyForceDrop).getCode());
+                blocked = !KeyBindingUtil.isDown(client, DontDropItMod.keyForceDrop);
                 switch (CONFIG_HOLDER.get().general.oobDropClickOverride) {
                 case FAVORITE_ITEMS:
                     if (FavoritesUtil.isStackFavorite(playerInventory.getCursorStack()))

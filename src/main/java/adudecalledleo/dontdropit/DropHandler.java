@@ -118,9 +118,7 @@ public class DropHandler {
 
     public static void renderSlotProgressOverlay(MatrixStack matrices, ItemStack stack,
                                                  int x, int y, int w, int h) {
-        if (!InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(),
-                KeyBindingHelper.getBoundKeyOf(DontDropItMod.keyForceDrop).getCode())
-          && FavoritesUtil.isStackFavorite(stack))
+        if (!KeyBindingUtil.isDown(DontDropItMod.keyForceDrop) && FavoritesUtil.isStackFavorite(stack))
             return;
         if (stack.getCount() > 1 && isDroppingEntireStack())
             DrawableHelper.fill(matrices, x, y, x + w, y + h, 0x20FF0000);
