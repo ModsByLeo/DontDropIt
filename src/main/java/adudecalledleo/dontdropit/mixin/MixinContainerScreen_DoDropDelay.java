@@ -62,7 +62,9 @@ public abstract class MixinContainerScreen_DoDropDelay extends Screen implements
     @Shadow protected int y;
     @Shadow @Final protected PlayerInventory playerInventory;
 
-    @Inject(method = "onMouseClick", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "onMouseClick",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerInteractionManager;clickSlot(IIILnet/minecraft/screen/slot/SlotActionType;Lnet/minecraft/entity/player/PlayerEntity;)Lnet/minecraft/item/ItemStack;"),
+            cancellable = true)
     public void dontdropit$disableOOBClickDrop(Slot slot, int invSlot, int button, SlotActionType slotActionType, CallbackInfo ci) {
         DontDropItMod.LOGGER.info("[onMouseClick] slot = {}, invSlot = {}, button = {}, slotActionType = {}",
                 slot, invSlot, button, slotActionType);
@@ -92,6 +94,7 @@ public abstract class MixinContainerScreen_DoDropDelay extends Screen implements
                     && Screen.hasShiftDown() // you'd think this would be implied by QUICK_MOVE but /shrug
                     && FavoritesUtil.isStackFavorite(stack))
                 ci.cancel();
+        default:
             break;
         }
     }
