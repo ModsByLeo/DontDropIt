@@ -1,5 +1,6 @@
 package adudecalledleo.dontdropit.mixin;
 
+import adudecalledleo.dontdropit.DontDropIt;
 import adudecalledleo.dontdropit.DropDelayRenderer;
 import adudecalledleo.dontdropit.ModKeyBindings;
 import adudecalledleo.dontdropit.config.FavoredChecker;
@@ -12,6 +13,8 @@ import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.packet.c2s.play.ClickWindowC2SPacket;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import org.spongepowered.asm.mixin.Final;
@@ -26,11 +29,12 @@ import static adudecalledleo.dontdropit.ModKeyBindings.keyDropStack;
 
 // TODO drop blocked tooltip, OOB click drop override, cursor close drop override
 @Mixin(HandledScreen.class)
-public abstract class HandledScreenMixin extends Screen implements HandledScreenHooks {
+public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen implements HandledScreenHooks {
     protected HandledScreenMixin() {
         super(null);
     }
 
+    @Shadow @Final protected T handler;
     @Shadow @Final protected PlayerInventory playerInventory;
     @Shadow protected Slot focusedSlot;
     @Shadow protected abstract void onMouseClick(Slot slot, int invSlot, int clickData, SlotActionType actionType);
@@ -69,6 +73,45 @@ public abstract class HandledScreenMixin extends Screen implements HandledScreen
               at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/ingame/HandledScreen;hasControlDown()Z"))
     public boolean useDropStackKey() {
         return ModKeyBindings.isDown(keyDropStack);
+    }
+
+    @Inject(method = "onClose", at = @At("HEAD"), cancellable = true)
+    public void cursorCloseDropOverride(CallbackInfo ci) {
+        if (client == null || client.player == null)
+            return;
+        ItemStack cursorStack = playerInventory.getCursorStack();
+        boolean preventDrop = false;
+        switch (AutoConfig.getConfigHolder(ModConfig.class).getConfig().general.cursorCloseDropOverride) {
+        case FAVORITE_ITEMS:
+            if (!FavoredChecker.canDropStack(cursorStack))
+                break;
+        case ALL_ITEMS:
+            preventDrop = true;
+        case DISABLED:
+            break;
+        }
+        if (cursorStack.isEmpty() || !preventDrop)
+            return;
+        int targetSlot;
+        targetSlot = playerInventory.getEmptySlot();
+        DontDropIt.LOGGER.info("tried empty slot - got ID {}", targetSlot);
+        if (targetSlot < 0) {
+            targetSlot = playerInventory.getOccupiedSlotWithRoomForStack(cursorStack);
+            DontDropIt.LOGGER.info("tried occupied slot - got ID {}", targetSlot);
+        }
+        if (targetSlot >= 0) {
+            ci.cancel();
+            // manually send the packets, so we can make sure the click action is received before the GUI closed action
+            short actionId = handler.getNextActionId(playerInventory);
+            ItemStack stack = handler.onSlotClick(targetSlot, 0, SlotActionType.PICKUP, client.player);
+            client.player.networkHandler.getConnection().send(new ClickWindowC2SPacket(handler.syncId, targetSlot,
+                    0, SlotActionType.PICKUP, stack, actionId), future ->
+                    client.execute(() -> {
+                        DontDropIt.LOGGER.info("Closing screen!");
+                        client.player.closeHandledScreen();
+                        client.openScreen(null); // relock the cursor
+                    }));
+        }
     }
 
     @Inject(method = "drawSlot",
