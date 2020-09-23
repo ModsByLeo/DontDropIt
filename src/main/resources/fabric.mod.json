@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "id": "dontdropit",
+  "version": "${version}",
+  "name": "Don't Drop It!",
+  "description": "Prevents accidental dropping of items via various means.",
+  "authors": [
+    "ADudeCalledLeo"
+  ],
+  "contact": {
+    "homepage": "https://curseforge.com/minecraft/mc-mods/dont-drop-it",
+    "sources": "https://github.com/Leo40Git/DontDropIt"
+  },
+  "license": "MIT",
+  "icon": "assets/dontdropit/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "adudecalledleo.dontdropit.DontDropIt"
+    ],
+    "modmenu": [
+      "adudecalledleo.dontdropit.compat.ModMenuSupport"
+    ]
+  },
+  "mixins": [
+    "dontdropit.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.9.3+build.207",
+    "fabric": "*",
+    "minecraft": "~1.16.3"
+  },
+  "suggests": {
+    "modupdater": "*"
+  },
+  "custom": {
+    "modupdater": {
+      "strategy": "curseforge",
+      "projectID": 390383
+    }
+  }
+}
