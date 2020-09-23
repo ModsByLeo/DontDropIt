@@ -4,6 +4,9 @@
   "package": "adudecalledleo.dontdropit.mixin",
   "compatibilityLevel": "JAVA_8",
   "client": [
+    "MinecraftClientMixin",
+    "InGameHudMixin",
+    "HandledScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

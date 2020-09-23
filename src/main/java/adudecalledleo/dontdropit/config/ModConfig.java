@@ -5,8 +5,6 @@ import me.sargunvohra.mcmods.autoconfig1u.ConfigData;
 import me.sargunvohra.mcmods.autoconfig1u.annotation.Config;
 import me.sargunvohra.mcmods.autoconfig1u.annotation.ConfigEntry;
 import me.shedaniel.clothconfig2.gui.entries.SelectionListEntry;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -18,12 +16,9 @@ import java.util.*;
 
 import static adudecalledleo.dontdropit.config.ModConfigLogger.LOGGER;
 
-@Environment(EnvType.CLIENT)
 @Config(name = DontDropIt.MOD_ID)
 public class ModConfig implements ConfigData {
-    @Environment(EnvType.CLIENT)
     public static class General {
-        @Environment(EnvType.CLIENT)
         public enum DropBehaviorOverride implements SelectionListEntry.Translatable {
             FAVORITE_ITEMS, ALL_ITEMS, DISABLED;
 
@@ -59,7 +54,6 @@ public class ModConfig implements ConfigData {
     @ConfigEntry.Gui.TransitiveObject
     public DropDelay dropDelay = new DropDelay();
 
-    @Environment(EnvType.CLIENT)
     public static class Favorites {
         @ConfigEntry.Gui.Tooltip(count = 2)
         public boolean enabled = true;
@@ -100,7 +94,7 @@ public class ModConfig implements ConfigData {
             return enchIds;
         }
 
-        private void postLoad() {
+        void postLoad() {
             items = init(items);
             enchantments = init(enchantments);
             tags = init(tags);
@@ -152,5 +146,6 @@ public class ModConfig implements ConfigData {
             favorites = new Favorites();
         } else
             favorites.postLoad();
+        FavoredChecker.updateFavoredSets(this);
     }
 }
