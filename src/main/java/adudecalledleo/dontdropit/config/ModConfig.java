@@ -4,7 +4,6 @@ import adudecalledleo.dontdropit.DontDropIt;
 import me.sargunvohra.mcmods.autoconfig1u.ConfigData;
 import me.sargunvohra.mcmods.autoconfig1u.annotation.Config;
 import me.sargunvohra.mcmods.autoconfig1u.annotation.ConfigEntry;
-import me.shedaniel.clothconfig2.gui.entries.SelectionListEntry;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -19,15 +18,6 @@ import static adudecalledleo.dontdropit.config.ModConfigLogger.LOGGER;
 @Config(name = DontDropIt.MOD_ID)
 public class ModConfig implements ConfigData {
     public static class General {
-        public enum DropBehaviorOverride implements SelectionListEntry.Translatable {
-            FAVORITE_ITEMS, ALL_ITEMS, DISABLED;
-
-            @Override
-            public String getKey() {
-                return "text.autoconfig.dontdropit.general.drop_behavior." + this.name().toLowerCase(Locale.ROOT);
-            }
-        }
-
         @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.BUTTON)
         @ConfigEntry.Gui.Tooltip(count = 2)
         public DropBehaviorOverride oobDropClickOverride = DropBehaviorOverride.FAVORITE_ITEMS;

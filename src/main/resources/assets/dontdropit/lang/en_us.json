@@ -1,7 +1,10 @@
 {
   "dontdropit.tooltip.drop.blocked": "Can't drop this item!",
   "dontdropit.tooltip.drop.unblock_hint": "Hold %s to allow dropping this item",
-  "dontdropit.tooltip.drop.allowed": "Click to drop item",
+  "dontdropit.tooltip.drop.unblock_hint.unbound[0]": "Bind %s to a key",
+  "dontdropit.tooltip.drop.unblock_hint.unbound[1]": "to allow dropping this item",
+  "dontdropit.tooltip.drop.allowed": "Click to drop item!",
+  "dontdropit.tooltip.drop.allowed.unblock_hint": "(overriding drop prevention)",
   "key.categories.dontdropit": "Don't Drop It!",
   "key.dontdropit.forceDrop": "Forcibly Drop Modifier",
   "key.dontdropit.dropStack": "Drop Entire Stack Modifier",
