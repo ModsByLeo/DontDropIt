@@ -20,11 +20,15 @@
     ],
     "modmenu": [
       "adudecalledleo.dontdropit.compat.ModMenuSupport"
+    ],
+    "dontdropit": [
+      "adudecalledleo.dontdropit.DontDropIt"
     ]
   },
   "mixins": [
     "dontdropit.mixins.json"
   ],
+  "accessWidener": "dontdropit.accesswidener",
   "depends": {
     "fabricloader": ">=0.9.3+build.207",
     "fabric": "*",

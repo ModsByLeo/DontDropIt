@@ -2,6 +2,7 @@ package adudecalledleo.dontdropit.mixin;
 
 import adudecalledleo.dontdropit.DontDropIt;
 import adudecalledleo.dontdropit.DropDelayRenderer;
+import adudecalledleo.dontdropit.IgnoredSlots;
 import adudecalledleo.dontdropit.ModKeyBindings;
 import adudecalledleo.dontdropit.config.DropBehaviorOverride;
 import adudecalledleo.dontdropit.config.FavoredChecker;
@@ -55,13 +56,14 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
     public boolean canDrop() {
         if (client == null || client.player == null || focusedSlot == null)
             return false;
-        // TODO Return null for creative slots, since those are always instant
+        if (IgnoredSlots.isSlotIgnored(focusedSlot))
+            return false;
         return focusedSlot.canTakeItems(client.player);
     }
 
     @Override
     public void drop(boolean entireStack) {
-        if (!canDrop() || getSelectedStack().isEmpty())
+        if (focusedSlot == null || getSelectedStack().isEmpty())
             return;
         onMouseClick(focusedSlot, focusedSlot.id, entireStack ? 1 : 0, SlotActionType.THROW);
     }
@@ -75,7 +77,8 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
               at = @At(value = "INVOKE", target = "Lnet/minecraft/client/options/KeyBinding;matchesKey(II)Z",
                        ordinal = 2))
     public boolean disableDropKey(KeyBinding keyBinding, int keyCode, int scanCode) {
-        // TODO Creative slots shouldn't be delayed
+        if (focusedSlot == null || IgnoredSlots.isSlotIgnored(focusedSlot))
+            return keyBinding.matchesKey(keyCode, scanCode);
         if (AutoConfig.getConfigHolder(ModConfig.class).getConfig().dropDelay.enabled)
             return false;
         return canDrop() && FavoredChecker.canDropStack(getSelectedStack()) && keyBinding.matchesKey(keyCode, scanCode);
@@ -116,18 +119,17 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
             return;
         }
         ItemStack cursorStack = playerInventory.getCursorStack();
-        boolean preventDrop = ModKeyBindings.isDown(ModKeyBindings.keyForceDrop);
-        if (!preventDrop) {
-            switch (oobDropClickOverride) {
-            case FAVORITE_ITEMS:
-                if (!FavoredChecker.isStackFavored(cursorStack))
-                    break;
-            case ALL_ITEMS:
-                preventDrop = true;
+        boolean forceDrop = ModKeyBindings.isDown(ModKeyBindings.keyForceDrop);
+        boolean canDrop = true;
+        switch (oobDropClickOverride) {
+        case FAVORITE_ITEMS:
+            if (!FavoredChecker.isStackFavored(cursorStack))
                 break;
-            }
+        case ALL_ITEMS:
+            canDrop = false;
+            break;
         }
-        if (!preventDrop)
+        if (forceDrop || canDrop)
             onMouseClick(null, -999, clickData, SlotActionType.PICKUP);
     }
 
@@ -136,19 +138,16 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
         if (client == null || client.player == null)
             return;
         ItemStack cursorStack = playerInventory.getCursorStack();
-        boolean preventDrop = ModKeyBindings.isDown(ModKeyBindings.keyForceDrop);
-        if (!preventDrop) {
-            switch (AutoConfig.getConfigHolder(ModConfig.class).getConfig().general.cursorCloseDropOverride) {
-            case FAVORITE_ITEMS:
-                if (!FavoredChecker.isStackFavored(cursorStack))
-                    break;
-            case ALL_ITEMS:
-                preventDrop = true;
-            case DISABLED:
+        boolean canDrop = true;
+        switch (AutoConfig.getConfigHolder(ModConfig.class).getConfig().general.cursorCloseDropOverride) {
+        case FAVORITE_ITEMS:
+            if (!FavoredChecker.isStackFavored(cursorStack))
                 break;
-            }
+        case ALL_ITEMS:
+            canDrop = false;
+            break;
         }
-        if (cursorStack.isEmpty() || !preventDrop)
+        if (cursorStack.isEmpty() || canDrop)
             return;
         int targetSlot;
         targetSlot = playerInventory.getEmptySlot();
@@ -177,7 +176,8 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
                      target = "Lnet/minecraft/client/render/item/ItemRenderer;renderGuiItemOverlay(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;IILjava/lang/String;)V",
                      shift = At.Shift.AFTER))
     public void drawSlotProgressOverlay(MatrixStack matrixStack, Slot slot, CallbackInfo ci) {
-        // TODO Don't do this for creative slots
+        if (IgnoredSlots.isSlotIgnored(slot))
+            return;
         DropDelayRenderer.renderOverlay(matrixStack, slot.getStack(), slot.x, slot.y, getZOffset());
     }
 

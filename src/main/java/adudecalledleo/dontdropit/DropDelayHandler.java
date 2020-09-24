@@ -112,7 +112,7 @@ public class DropDelayHandler {
                 dropAction.drop(wasDropStackDown);
             }
         } else
-            dropDelayCounter = 0;
+            reset();
     }
 
     public static long getCounter() {
