@@ -7,6 +7,7 @@ import adudecalledleo.dontdropit.ModKeyBindings;
 import adudecalledleo.dontdropit.config.DropBehaviorOverride;
 import adudecalledleo.dontdropit.config.FavoredChecker;
 import adudecalledleo.dontdropit.config.ModConfig;
+import adudecalledleo.dontdropit.duck.ClientPlayNetworkHandlerHooks;
 import adudecalledleo.dontdropit.duck.HandledScreenHooks;
 import me.sargunvohra.mcmods.autoconfig1u.AutoConfig;
 import net.minecraft.client.gui.screen.Screen;
@@ -15,7 +16,6 @@ import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.packet.c2s.play.ClickWindowC2SPacket;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
@@ -151,24 +151,32 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
             return;
         int targetSlot;
         targetSlot = playerInventory.getEmptySlot();
-        DontDropIt.LOGGER.info("tried empty slot - got ID {}", targetSlot);
+        DontDropIt.LOGGER.info("cursorCloseDropOverride: tried getting empty slot - got ID {}", targetSlot);
         if (targetSlot < 0) {
             targetSlot = playerInventory.getOccupiedSlotWithRoomForStack(cursorStack);
-            DontDropIt.LOGGER.info("tried occupied slot - got ID {}", targetSlot);
+            DontDropIt.LOGGER.info("cursorCloseDropOverride: tried getting occupied slot with room - got ID {}", targetSlot);
         }
         if (targetSlot >= 0) {
-            ci.cancel();
-            // manually send the packets, so we can make sure the click action is received before the GUI closed action
+            // locate handler slot ID that matches the target inventory slot ID
+            int slotId = -1;
+            for (Slot slot : handler.slots) {
+                if (slot.inventory == playerInventory && ((SlotAccessor) slot).getInventoryIndex() == targetSlot) {
+                    slotId = slot.id;
+                    break;
+                }
+            }
+            if (slotId < 0) {
+                DontDropIt.LOGGER.info("cursorCloseDropOverride: inventory ID {} does not match any slot on the current screen", targetSlot);
+                return;
+            }
+            DontDropIt.LOGGER.info("cursorCloseDropOverride: inventory ID {} -> slot ID {}", targetSlot, slotId);
             short actionId = handler.getNextActionId(playerInventory);
-            ItemStack stack = handler.onSlotClick(targetSlot, 0, SlotActionType.PICKUP, client.player);
-            client.player.networkHandler.getConnection().send(new ClickWindowC2SPacket(handler.syncId, targetSlot,
-                    0, SlotActionType.PICKUP, stack, actionId), future ->
-                    client.execute(() -> {
-                        DontDropIt.LOGGER.info("Closing screen!");
-                        client.player.closeHandledScreen();
-                        client.openScreen(null); // relock the cursor
-                    }));
-        }
+            ItemStack stack = handler.onSlotClick(slotId, 0, SlotActionType.PICKUP, client.player);
+            ci.cancel();
+            ((ClientPlayNetworkHandlerHooks) client.player.networkHandler)
+                    .clickSlotAndClose(handler.syncId, slotId, actionId, stack);
+        } else
+            DontDropIt.LOGGER.info("cursorCloseDropOverride: inventory doesn't have any space, dropping normally");
     }
 
     @Inject(method = "drawSlot",

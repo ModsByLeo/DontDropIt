@@ -6,6 +6,8 @@
   "client": [
     "MinecraftClientMixin",
     "InGameHudMixin",
+    "ClientPlayNetworkHandlerMixin",
+    "SlotAccessor",
     "HandledScreenMixin"
   ],
   "injectors": {
