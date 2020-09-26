@@ -1,6 +1,5 @@
 package adudecalledleo.dontdropit.mixin;
 
-import adudecalledleo.dontdropit.DontDropIt;
 import adudecalledleo.dontdropit.DropDelayRenderer;
 import adudecalledleo.dontdropit.IgnoredSlots;
 import adudecalledleo.dontdropit.ModKeyBindings;
@@ -36,7 +35,6 @@ import java.util.ArrayList;
 import static adudecalledleo.dontdropit.ModKeyBindings.keyDropStack;
 import static adudecalledleo.dontdropit.ModKeyBindings.keyForceDrop;
 
-// TODO drop blocked tooltip, OOB click drop override, cursor close drop override
 @Mixin(HandledScreen.class)
 public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen implements HandledScreenHooks {
     protected HandledScreenMixin() {
@@ -151,11 +149,8 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
             return;
         int targetSlot;
         targetSlot = playerInventory.getEmptySlot();
-        DontDropIt.LOGGER.info("cursorCloseDropOverride: tried getting empty slot - got ID {}", targetSlot);
-        if (targetSlot < 0) {
+        if (targetSlot < 0)
             targetSlot = playerInventory.getOccupiedSlotWithRoomForStack(cursorStack);
-            DontDropIt.LOGGER.info("cursorCloseDropOverride: tried getting occupied slot with room - got ID {}", targetSlot);
-        }
         if (targetSlot >= 0) {
             // locate handler slot ID that matches the target inventory slot ID
             int slotId = -1;
@@ -165,18 +160,14 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
                     break;
                 }
             }
-            if (slotId < 0) {
-                DontDropIt.LOGGER.info("cursorCloseDropOverride: inventory ID {} does not match any slot on the current screen", targetSlot);
+            if (slotId < 0)
                 return;
-            }
-            DontDropIt.LOGGER.info("cursorCloseDropOverride: inventory ID {} -> slot ID {}", targetSlot, slotId);
             short actionId = handler.getNextActionId(playerInventory);
             ItemStack stack = handler.onSlotClick(slotId, 0, SlotActionType.PICKUP, client.player);
             ci.cancel();
             ((ClientPlayNetworkHandlerHooks) client.player.networkHandler)
                     .clickSlotAndClose(handler.syncId, slotId, actionId, stack);
-        } else
-            DontDropIt.LOGGER.info("cursorCloseDropOverride: inventory doesn't have any space, dropping normally");
+        }
     }
 
     @Inject(method = "drawSlot",
