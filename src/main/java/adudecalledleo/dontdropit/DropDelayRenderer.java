@@ -15,7 +15,7 @@ public class DropDelayRenderer {
     private static final Identifier TEX_FAVORITE = DontDropIt.id("textures/gui/favorite.png");
 
     public static void renderFavoriteIcon(MatrixStack matrices, ItemStack stack, int x, int y) {
-        if (!FavoredChecker.isStackFavored(stack))
+        if (!ModConfig.get().favorites.drawOverlay || !FavoredChecker.isStackFavored(stack))
             return;
         MinecraftClient.getInstance().getTextureManager().bindTexture(TEX_FAVORITE);
         DrawableHelper.drawTexture(matrices, x, y, 18, 18, 18, 18, 18, 18);
