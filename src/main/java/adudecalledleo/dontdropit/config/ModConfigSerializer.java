@@ -14,4 +14,9 @@ public class ModConfigSerializer extends JanksonConfigSerializer<ModConfig> {
         FavoredChecker.updateFavoredSets(config);
         super.serialize(config);
     }
+
+    @Override
+    public ModConfig createDefault() {
+        return new ModConfig();
+    }
 }

@@ -3,12 +3,12 @@ package adudecalledleo.dontdropit;
 import adudecalledleo.dontdropit.config.FavoredChecker;
 import adudecalledleo.dontdropit.config.ModConfig;
 import adudecalledleo.dontdropit.duck.HandledScreenHooks;
-import me.sargunvohra.mcmods.autoconfig1u.AutoConfig;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 
-import static adudecalledleo.dontdropit.ModKeyBindings.*;
+import static adudecalledleo.dontdropit.ModKeyBindings.keyDropStack;
+import static adudecalledleo.dontdropit.ModKeyBindings.keyToggleDropDelay;
 
 public class DropDelayHandler {
     private static long dropDelayCounter;
@@ -35,8 +35,9 @@ public class DropDelayHandler {
         if (ModKeyBindings.isDown(keyToggleDropDelay)) {
             if (!wasToggleDelayDown) {
                 wasToggleDelayDown = true;
-                ModConfig config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
+                ModConfig config = ModConfig.get();
                 config.dropDelay.enabled = !config.dropDelay.enabled;
+                ModConfig.save();
             }
         } else
             wasToggleDelayDown = false;
@@ -49,7 +50,7 @@ public class DropDelayHandler {
     private static void tickNormally(MinecraftClient client) {
         if (client.player == null)
             return;
-        if (AutoConfig.getConfigHolder(ModConfig.class).getConfig().dropDelay.enabled) {
+        if (ModConfig.get().dropDelay.enabled) {
             if (client.player.isSpectator()) {
                 reset();
                 return;
@@ -73,7 +74,7 @@ public class DropDelayHandler {
     private static void tickOnHandledScreen(MinecraftClient client, HandledScreenHooks screenHooks) {
         if (client.player == null)
             return;
-        if (AutoConfig.getConfigHolder(ModConfig.class).getConfig().dropDelay.enabled) {
+        if (ModConfig.get().dropDelay.enabled) {
             if (client.player.isSpectator() || !screenHooks.canDrop()) {
                 reset();
                 return;
@@ -108,7 +109,7 @@ public class DropDelayHandler {
                 currentStack = stack;
                 dropDelayCounter++;
             } else {
-                dropDelayCounter = AutoConfig.getConfigHolder(ModConfig.class).getConfig().dropDelay.doDelayOnce ? getCounterMax() : 0;
+                dropDelayCounter = ModConfig.get().dropDelay.doDelayOnce ? getCounterMax() : 0;
                 dropAction.drop(wasDropStackDown);
             }
         } else
@@ -120,7 +121,7 @@ public class DropDelayHandler {
     }
 
     public static long getCounterMax() {
-        return AutoConfig.getConfigHolder(ModConfig.class).getConfig().dropDelay.ticks;
+        return ModConfig.get().dropDelay.ticks;
     }
 
     public static ItemStack getCurrentStack() {

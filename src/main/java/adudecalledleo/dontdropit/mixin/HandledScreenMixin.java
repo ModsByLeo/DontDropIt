@@ -8,7 +8,6 @@ import adudecalledleo.dontdropit.config.FavoredChecker;
 import adudecalledleo.dontdropit.config.ModConfig;
 import adudecalledleo.dontdropit.duck.ClientPlayNetworkHandlerHooks;
 import adudecalledleo.dontdropit.duck.HandledScreenHooks;
-import me.sargunvohra.mcmods.autoconfig1u.AutoConfig;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.options.KeyBinding;
@@ -77,7 +76,7 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
     public boolean disableDropKey(KeyBinding keyBinding, int keyCode, int scanCode) {
         if (focusedSlot == null || IgnoredSlots.isSlotIgnored(focusedSlot))
             return keyBinding.matchesKey(keyCode, scanCode);
-        if (AutoConfig.getConfigHolder(ModConfig.class).getConfig().dropDelay.enabled)
+        if (ModConfig.get().dropDelay.enabled)
             return false;
         return canDrop() && FavoredChecker.canDropStack(getSelectedStack()) && keyBinding.matchesKey(keyCode, scanCode);
     }
@@ -111,7 +110,7 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
                        ordinal = 9))
     public void oobClickDropOverride(@SuppressWarnings("rawtypes") HandledScreen handledScreen,
             Slot slot, int invSlot, int clickData, SlotActionType actionType) {
-        DropBehaviorOverride oobDropClickOverride = AutoConfig.getConfigHolder(ModConfig.class).getConfig().general.oobDropClickOverride;
+        DropBehaviorOverride oobDropClickOverride = ModConfig.get().general.oobDropClickOverride;
         if (oobDropClickOverride == DropBehaviorOverride.DISABLED || invSlot != -999 || actionType != SlotActionType.PICKUP) {
             onMouseClick(slot, invSlot, clickData, actionType);
             return;
@@ -137,7 +136,7 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
             return;
         ItemStack cursorStack = playerInventory.getCursorStack();
         boolean canDrop = true;
-        switch (AutoConfig.getConfigHolder(ModConfig.class).getConfig().general.cursorCloseDropOverride) {
+        switch (ModConfig.get().general.cursorCloseDropOverride) {
         case FAVORITE_ITEMS:
             if (!FavoredChecker.isStackFavored(cursorStack))
                 break;
@@ -188,7 +187,7 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
         ArrayList<Text> tooltipTexts = new ArrayList<>();
         boolean forceDrop = ModKeyBindings.isDown(keyForceDrop);
         boolean canDrop = false;
-        switch (AutoConfig.getConfigHolder(ModConfig.class).getConfig().general.oobDropClickOverride) {
+        switch (ModConfig.get().general.oobDropClickOverride) {
         case FAVORITE_ITEMS:
             if (FavoredChecker.isStackFavored(cursorStack))
                 break;

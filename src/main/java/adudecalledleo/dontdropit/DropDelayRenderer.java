@@ -4,7 +4,6 @@ import adudecalledleo.dontdropit.config.FavoredChecker;
 import adudecalledleo.dontdropit.config.ModConfig;
 import adudecalledleo.lionutils.color.ColorUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
-import me.sargunvohra.mcmods.autoconfig1u.AutoConfig;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.util.math.MatrixStack;
@@ -26,7 +25,7 @@ public class DropDelayRenderer {
     private static final int COLOR_PROGRESS = ColorUtil.pack(0x00, 0xFF, 0x00, 0x30);
 
     public static void renderProgressOverlay(MatrixStack matrices, ItemStack stack, int x, int y, int w, int h) {
-        if (!AutoConfig.getConfigHolder(ModConfig.class).getConfig().dropDelay.enabled)
+        if (!ModConfig.get().dropDelay.enabled)
             return;
         ItemStack currentStack = DropDelayHandler.getCurrentStack();
         if (currentStack.isEmpty() || currentStack != stack)
@@ -46,11 +45,11 @@ public class DropDelayRenderer {
         matrixStack.push();
         matrixStack.translate(0, 0, z);
         RenderSystem.enableBlend();
-        DropDelayRenderer.renderFavoriteIcon(matrixStack, stack, x - 1, y - 1);
+        renderFavoriteIcon(matrixStack, stack, x - 1, y - 1);
         RenderSystem.disableBlend();
         matrixStack.translate(0, 0, 1);
         RenderSystem.colorMask(true, true, true, false);
-        DropDelayRenderer.renderProgressOverlay(matrixStack, stack, x, y, 16, 16);
+        renderProgressOverlay(matrixStack, stack, x, y, 16, 16);
         RenderSystem.colorMask(true, true, true, true);
         matrixStack.pop();
     }

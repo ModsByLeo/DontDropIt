@@ -1,7 +1,9 @@
 package adudecalledleo.dontdropit.config;
 
 import adudecalledleo.dontdropit.DontDropIt;
+import me.sargunvohra.mcmods.autoconfig1u.AutoConfig;
 import me.sargunvohra.mcmods.autoconfig1u.ConfigData;
+import me.sargunvohra.mcmods.autoconfig1u.ConfigManager;
 import me.sargunvohra.mcmods.autoconfig1u.annotation.Config;
 import me.sargunvohra.mcmods.autoconfig1u.annotation.ConfigEntry;
 import net.minecraft.enchantment.Enchantment;
@@ -17,6 +19,14 @@ import static adudecalledleo.dontdropit.config.ModConfigLogger.LOGGER;
 
 @Config(name = DontDropIt.MOD_ID)
 public class ModConfig implements ConfigData {
+    public static ModConfig get() {
+        return AutoConfig.getConfigHolder(ModConfig.class).getConfig();
+    }
+
+    public static void save() {
+        ((ConfigManager<ModConfig>) AutoConfig.getConfigHolder(ModConfig.class)).save();
+    }
+
     public static class General {
         @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.BUTTON)
         @ConfigEntry.Gui.Tooltip(count = 2)

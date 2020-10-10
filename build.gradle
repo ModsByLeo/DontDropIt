@@ -66,6 +66,7 @@ if (Boolean.valueOf(project.use_runtime_deps)) {
         // JellySquid's elemental optimizations
         depRuntime "com.github.jellysquid3:lithium-fabric:${project.lithium_version}"
         depRuntime "com.github.jellysquid3:phosphor-fabric:${project.phosphor_version}"
+        depRuntime "com.github.jellysquid3:sodium-fabric:${project.sodium_version}"
 
         // ...don't judge me, this fixes a weird-ass problem with Lithium
         runtime('net.fabricmc:sponge-mixin:0.8+build.18') {
