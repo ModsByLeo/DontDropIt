@@ -42,15 +42,15 @@ public class DropDelayRenderer {
     public static void renderOverlay(MatrixStack matrixStack, ItemStack stack, int x, int y, int z) {
         if (stack.isEmpty())
             return;
+        RenderSystem.enableBlend();
         matrixStack.push();
         matrixStack.translate(0, 0, z);
-        RenderSystem.enableBlend();
         renderFavoriteIcon(matrixStack, stack, x - 1, y - 1);
-        RenderSystem.disableBlend();
-        matrixStack.translate(0, 0, 1);
+        matrixStack.translate(0, 0, 200);
         RenderSystem.colorMask(true, true, true, false);
         renderProgressOverlay(matrixStack, stack, x, y, 16, 16);
         RenderSystem.colorMask(true, true, true, true);
         matrixStack.pop();
+        RenderSystem.disableBlend();
     }
 }
