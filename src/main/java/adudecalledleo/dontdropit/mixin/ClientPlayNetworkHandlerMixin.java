@@ -5,8 +5,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.Packet;
-import net.minecraft.network.packet.c2s.play.ClickWindowC2SPacket;
-import net.minecraft.network.packet.s2c.play.ConfirmGuiActionS2CPacket;
+import net.minecraft.network.packet.c2s.play.ClickSlotC2SPacket;
+import net.minecraft.network.packet.s2c.play.ConfirmScreenActionS2CPacket;
 import net.minecraft.screen.slot.SlotActionType;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -25,16 +25,16 @@ public abstract class ClientPlayNetworkHandlerMixin implements ClientPlayNetwork
 
     @Override
     public void clickSlotAndClose(int syncId, int slotId, short actionId, ItemStack stack) {
-        sendPacket(new ClickWindowC2SPacket(syncId, slotId, 0, SlotActionType.PICKUP, stack, actionId));
+        sendPacket(new ClickSlotC2SPacket(syncId, slotId, 0, SlotActionType.PICKUP, stack, actionId));
         waitingForActionId = actionId;
         waitingForSyncId = syncId;
     }
 
-    @Inject(method = "onGuiActionConfirm", at = @At("TAIL"))
-    public void closeOnConfirmAction(ConfirmGuiActionS2CPacket packet, CallbackInfo ci) {
+    @Inject(method = "onConfirmScreenAction", at = @At("TAIL"))
+    public void closeOnConfirmAction(ConfirmScreenActionS2CPacket packet, CallbackInfo ci) {
         if (!packet.wasAccepted())
             return;
-        if (waitingForSyncId == packet.getId() && waitingForActionId == packet.getActionId()) {
+        if (waitingForSyncId == packet.getSyncId() && waitingForActionId == packet.getActionId()) {
             waitingForActionId = -1;
             waitingForSyncId = -1;
             if (client.player != null)

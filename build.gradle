@@ -57,6 +57,11 @@ dependencies {
 if (Boolean.valueOf(project.use_runtime_deps)) {
     repositories {
         maven { url "https://jitpack.io" }
+        if (!Boolean.valueOf(project.lithium_disable) && Boolean.valueOf(project.lithium_use_local)) {
+            flatDir {
+                dirs 'mods'
+            }
+        }
     }
 
     dependencies {
@@ -64,14 +69,15 @@ if (Boolean.valueOf(project.use_runtime_deps)) {
         // This greatly reduces the amount of time needed to start the game, but is generally unsafe in production
         depRuntime "com.github.SuperCoder7979:databreaker:${project.databreaker_version}"
         // JellySquid's elemental optimizations
-        depRuntime "com.github.jellysquid3:lithium-fabric:${project.lithium_version}"
+        if (!Boolean.valueOf(project.lithium_disable)) {
+            if (Boolean.valueOf(project.lithium_use_local)) {
+                modRuntime name: 'lithium'
+            } else {
+                depRuntime "com.github.jellysquid3:lithium-fabric:${project.lithium_version}"
+            }
+        }
         depRuntime "com.github.jellysquid3:phosphor-fabric:${project.phosphor_version}"
         depRuntime "com.github.jellysquid3:sodium-fabric:${project.sodium_version}"
-
-        // ...don't judge me, this fixes a weird-ass problem with Lithium
-        runtime('net.fabricmc:sponge-mixin:0.8+build.18') {
-            force = true
-        }
     }
 }
 
