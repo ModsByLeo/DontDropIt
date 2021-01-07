@@ -28,6 +28,7 @@ public abstract class ClientPlayNetworkHandlerMixin implements ClientPlayNetwork
         sendPacket(new ClickSlotC2SPacket(syncId, slotId, 0, SlotActionType.PICKUP, stack, actionId));
         waitingForActionId = actionId;
         waitingForSyncId = syncId;
+        client.openScreen(null); // relock mouse
     }
 
     @Inject(method = "onConfirmScreenAction", at = @At("TAIL"))
@@ -39,7 +40,6 @@ public abstract class ClientPlayNetworkHandlerMixin implements ClientPlayNetwork
             waitingForSyncId = -1;
             if (client.player != null)
                 client.player.closeHandledScreen();
-            client.openScreen(null); // relock mouse
         }
     }
 }

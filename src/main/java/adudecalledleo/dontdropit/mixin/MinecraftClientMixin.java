@@ -6,6 +6,7 @@ import net.minecraft.client.options.KeyBinding;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
@@ -13,6 +14,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public abstract class MinecraftClientMixin {
     @Shadow @Final public GameOptions options;
 
+    @Unique
     private boolean disableDropKey(KeyBinding binding) {
         if (binding == options.keyDrop)
             return false;

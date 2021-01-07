@@ -3,7 +3,6 @@ package adudecalledleo.dontdropit.config;
 import adudecalledleo.dontdropit.DontDropIt;
 import me.sargunvohra.mcmods.autoconfig1u.AutoConfig;
 import me.sargunvohra.mcmods.autoconfig1u.ConfigData;
-import me.sargunvohra.mcmods.autoconfig1u.ConfigManager;
 import me.sargunvohra.mcmods.autoconfig1u.annotation.Config;
 import me.sargunvohra.mcmods.autoconfig1u.annotation.ConfigEntry;
 import net.minecraft.enchantment.Enchantment;
@@ -13,7 +12,10 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
 
 import static adudecalledleo.dontdropit.config.ModConfigLogger.LOGGER;
 
@@ -24,14 +26,12 @@ public class ModConfig implements ConfigData {
     }
 
     public static void save() {
-        ((ConfigManager<ModConfig>) AutoConfig.getConfigHolder(ModConfig.class)).save();
+        AutoConfig.getConfigHolder(ModConfig.class).save();
     }
 
     public static class General {
-        @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.BUTTON)
         @ConfigEntry.Gui.Tooltip(count = 2)
         public DropBehaviorOverride oobDropClickOverride = DropBehaviorOverride.FAVORITE_ITEMS;
-        @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.BUTTON)
         @ConfigEntry.Gui.Tooltip(count = 2)
         public DropBehaviorOverride cursorCloseDropOverride = DropBehaviorOverride.ALL_ITEMS;
     }
@@ -146,6 +146,11 @@ public class ModConfig implements ConfigData {
             favorites = new Favorites();
         } else
             favorites.postLoad();
+        FavoredChecker.updateFavoredSets(this);
+    }
+
+    public void postSave() {
+        favorites.postLoad();
         FavoredChecker.updateFavoredSets(this);
     }
 }

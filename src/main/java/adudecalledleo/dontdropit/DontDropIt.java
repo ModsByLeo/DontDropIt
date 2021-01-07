@@ -1,14 +1,16 @@
 package adudecalledleo.dontdropit;
 
 import adudecalledleo.dontdropit.api.DontDropItApi;
+import adudecalledleo.dontdropit.config.DropBehaviorOverride;
 import adudecalledleo.dontdropit.config.ModConfig;
-import adudecalledleo.dontdropit.config.ModConfigSerializer;
 import adudecalledleo.lionutils.LoggerUtil;
 import me.sargunvohra.mcmods.autoconfig1u.AutoConfig;
+import me.sargunvohra.mcmods.autoconfig1u.serializer.JanksonConfigSerializer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.Logger;
 
@@ -27,7 +29,12 @@ public class DontDropIt implements ClientModInitializer, DontDropItApi {
 
     @Override
     public void onInitializeClient() {
-        AutoConfig.register(ModConfig.class, (definition, configClass) -> new ModConfigSerializer(definition));
+        DropBehaviorOverride.registerConfigGuiProvider(ModConfig.class);
+        AutoConfig.register(ModConfig.class, JanksonConfigSerializer::new)
+                .registerSaveListener((manager, data) -> {
+                    data.postSave();
+                    return ActionResult.PASS;
+                });
         ModKeyBindings.register();
         IgnoredSlots.collectFromEntrypoints();
         ClientTickEvents.END_CLIENT_TICK.register(DropDelayHandler::tick);
