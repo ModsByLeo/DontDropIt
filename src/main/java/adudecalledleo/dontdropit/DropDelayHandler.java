@@ -75,11 +75,11 @@ public class DropDelayHandler {
         if (client.player == null)
             return;
         if (ModConfig.get().dropDelay.enabled) {
-            if (client.player.isSpectator() || !screenHooks.canDrop()) {
+            if (client.player.isSpectator() || !screenHooks.dontdropit_canDrop()) {
                 reset();
                 return;
             }
-            doDropProgress(client, screenHooks.getSelectedStack(), screenHooks::drop);
+            doDropProgress(client, screenHooks.dontdropit_getSelectedStack(), screenHooks::dontdropit_drop);
         }
         else
             reset();

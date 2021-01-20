@@ -24,7 +24,7 @@ public abstract class ClientPlayNetworkHandlerMixin implements ClientPlayNetwork
     @Unique private int waitingForSyncId = -1;
 
     @Override
-    public void clickSlotAndClose(int syncId, int slotId, short actionId, ItemStack stack) {
+    public void dontdropit_clickSlotAndClose(int syncId, int slotId, short actionId, ItemStack stack) {
         sendPacket(new ClickSlotC2SPacket(syncId, slotId, 0, SlotActionType.PICKUP, stack, actionId));
         waitingForActionId = actionId;
         waitingForSyncId = syncId;

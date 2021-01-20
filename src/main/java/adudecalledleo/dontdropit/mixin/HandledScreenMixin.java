@@ -51,7 +51,7 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
     @Shadow protected abstract boolean isClickOutsideBounds(double mouseX, double mouseY, int left, int top, int button);
 
     @Override
-    public boolean canDrop() {
+    public boolean dontdropit_canDrop() {
         if (client == null || client.player == null || focusedSlot == null)
             return false;
         if (IgnoredSlots.isSlotIgnored(focusedSlot))
@@ -60,14 +60,14 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
     }
 
     @Override
-    public void drop(boolean entireStack) {
-        if (focusedSlot == null || getSelectedStack().isEmpty())
+    public void dontdropit_drop(boolean entireStack) {
+        if (focusedSlot == null || dontdropit_getSelectedStack().isEmpty())
             return;
         onMouseClick(focusedSlot, focusedSlot.id, entireStack ? 1 : 0, SlotActionType.THROW);
     }
 
     @Override
-    public ItemStack getSelectedStack() {
+    public ItemStack dontdropit_getSelectedStack() {
         return focusedSlot == null ? ItemStack.EMPTY : focusedSlot.getStack();
     }
 
@@ -79,7 +79,7 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
             return keyBinding.matchesKey(keyCode, scanCode);
         if (ModConfig.get().dropDelay.enabled)
             return false;
-        return canDrop() && FavoredChecker.canDropStack(getSelectedStack()) && keyBinding.matchesKey(keyCode, scanCode);
+        return dontdropit_canDrop() && FavoredChecker.canDropStack(dontdropit_getSelectedStack()) && keyBinding.matchesKey(keyCode, scanCode);
     }
 
     @Redirect(method = "keyPressed",
@@ -199,7 +199,7 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
             ItemStack stack = handler.onSlotClick(slotId, 0, SlotActionType.PICKUP, client.player);
             ci.cancel();
             ((ClientPlayNetworkHandlerHooks) client.player.networkHandler)
-                    .clickSlotAndClose(handler.syncId, slotId, actionId, stack);
+                    .dontdropit_clickSlotAndClose(handler.syncId, slotId, actionId, stack);
         }
     }
 
