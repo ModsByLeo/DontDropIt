@@ -1,5 +1,6 @@
 package adudecalledleo.dontdropit.mixin.handledscreen;
 
+import adudecalledleo.dontdropit.DropDelayRenderer;
 import adudecalledleo.dontdropit.IgnoredSlots;
 import adudecalledleo.dontdropit.ModKeyBindings;
 import adudecalledleo.dontdropit.config.FavoredChecker;
@@ -8,6 +9,7 @@ import adudecalledleo.dontdropit.duck.HandledScreenHooks;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.options.KeyBinding;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
@@ -15,17 +17,19 @@ import net.minecraft.text.LiteralText;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import static adudecalledleo.dontdropit.ModKeyBindings.keyDropStack;
 
 @Mixin(HandledScreen.class)
-public abstract class HandledScreenMixin_HooksImpl extends Screen implements HandledScreenHooks {
+public abstract class HandledScreenMixin_HooksAndMisc extends Screen implements HandledScreenHooks {
     @Shadow protected Slot focusedSlot;
 
     @Shadow protected abstract void onMouseClick(Slot slot, int invSlot, int clickData, SlotActionType actionType);
 
-    private HandledScreenMixin_HooksImpl() {
+    private HandledScreenMixin_HooksAndMisc() {
         super(LiteralText.EMPTY);
         throw new RuntimeException("Mixin constructor called");
     }
@@ -68,5 +72,15 @@ public abstract class HandledScreenMixin_HooksImpl extends Screen implements Han
               at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/ingame/HandledScreen;hasControlDown()Z"))
     public boolean useDropStackKey() {
         return ModKeyBindings.isDown(keyDropStack);
+    }
+
+    @Inject(method = "drawSlot",
+            at = @At(value = "INVOKE",
+                     target = "Lnet/minecraft/client/render/item/ItemRenderer;renderGuiItemOverlay(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;IILjava/lang/String;)V",
+                     shift = At.Shift.AFTER))
+    public void drawSlotProgressOverlay(MatrixStack matrixStack, Slot slot, CallbackInfo ci) {
+        if (IgnoredSlots.isSlotIgnored(slot))
+            return;
+        DropDelayRenderer.renderOverlay(matrixStack, slot.getStack(), slot.x, slot.y, getZOffset());
     }
 }

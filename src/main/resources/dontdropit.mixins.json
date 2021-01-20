@@ -11,9 +11,9 @@
     "KeyBindingAccessor",
     "KeyboardMixin",
     "MouseMixin",
-    "handledscreen.HandledScreenMixin_HooksImpl",
+    "handledscreen.HandledScreenMixin_HooksAndMisc",
     "handledscreen.HandledScreenMixin_InterceptMouse",
-    "handledscreen.HandledScreenMixin_DropOverride"
+    "handledscreen.HandledScreenMixin_InterceptClose"
   ],
   "injectors": {
     "defaultRequire": 1
