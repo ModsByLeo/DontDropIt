@@ -5,17 +5,17 @@
   "compatibilityLevel": "JAVA_8",
   "client": [
     "ClientPlayNetworkHandlerMixin",
-    "HandledScreenMixin",
     "InGameHudMixin",
     "MinecraftClientMixin",
-    "SlotAccessor"
+    "SlotAccessor",
+    "KeyBindingAccessor",
+    "KeyboardMixin",
+    "MouseMixin",
+    "handledscreen.HandledScreenMixin_HooksImpl",
+    "handledscreen.HandledScreenMixin_InterceptMouse",
+    "handledscreen.HandledScreenMixin_DropOverride"
   ],
   "injectors": {
     "defaultRequire": 1
-  },
-  "mixins": [
-    "KeyBindingAccessor",
-    "KeyboardMixin",
-    "MouseMixin"
-  ]
+  }
 }
