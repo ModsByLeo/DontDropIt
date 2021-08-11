@@ -55,14 +55,14 @@ public class DropDelayHandler {
                 reset();
                 return;
             }
-            doDropProgress(client, client.player.inventory.getMainHandStack(), entireStack -> {
+            doDropProgress(client, client.player.getInventory().getMainHandStack(), entireStack -> {
                 if (client.player.dropSelectedItem(entireStack))
                     client.player.swingHand(Hand.MAIN_HAND);
             });
         } else {
             reset();
             while (client.options.keyDrop.wasPressed()) {
-                ItemStack selectedStack = client.player.inventory.getMainHandStack();
+                ItemStack selectedStack = client.player.getInventory().getMainHandStack();
                 if (FavoredChecker.isStackFavored(selectedStack))
                     continue;
                 if (!client.player.isSpectator() && client.player.dropSelectedItem(ModKeyBindings.isDown(keyDropStack)))

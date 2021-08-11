@@ -17,7 +17,7 @@ public abstract class InGameHudMixin extends DrawableHelper {
     @Unique private final MatrixStack matrixStack = new MatrixStack();
 
     @Inject(method = "renderHotbarItem", at = @At(value = "TAIL"))
-    public void renderHotbarDropProgress(int x, int y, float partialTicks, PlayerEntity player, ItemStack stack, CallbackInfo ci) {
+    public void renderHotbarDropProgress(int x, int y, float tickDelta, PlayerEntity player, ItemStack stack, int seed, CallbackInfo ci) {
         DropDelayRenderer.renderOverlay(matrixStack, stack, x, y, getZOffset());
     }
 }

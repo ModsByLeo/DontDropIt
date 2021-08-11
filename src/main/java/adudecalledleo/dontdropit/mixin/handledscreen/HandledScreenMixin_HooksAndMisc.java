@@ -56,7 +56,7 @@ public abstract class HandledScreenMixin_HooksAndMisc extends Screen implements 
     }
 
     @Redirect(method = "keyPressed",
-              at = @At(value = "INVOKE", target = "Lnet/minecraft/client/options/KeyBinding;matchesKey(II)Z",
+              at = @At(value = "INVOKE", target = "Lnet/minecraft/client/option/KeyBinding;matchesKey(II)Z",
                        ordinal = 2))
     public boolean disableDropKey(KeyBinding keyBinding, int keyCode, int scanCode) {
         if (focusedSlot == null || IgnoredSlots.isSlotIgnored(focusedSlot))

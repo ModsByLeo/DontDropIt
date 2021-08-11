@@ -4,19 +4,6 @@ import adudecalledleo.dontdropit.ModKeyBindings;
 import adudecalledleo.dontdropit.config.DropBehaviorOverride;
 import adudecalledleo.dontdropit.config.FavoredChecker;
 import adudecalledleo.dontdropit.config.ModConfig;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.screen.slot.SlotActionType;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
-import net.minecraft.text.Texts;
-import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Formatting;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -26,6 +13,18 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.item.ItemStack;
+import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.slot.Slot;
+import net.minecraft.screen.slot.SlotActionType;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 import java.util.ArrayList;
 
 import static adudecalledleo.dontdropit.ModKeyBindings.keyForceDrop;
@@ -33,7 +32,6 @@ import static adudecalledleo.dontdropit.ModKeyBindings.keyForceDrop;
 @Mixin(value = HandledScreen.class, priority = 500) // lower priority to get processed first
 public abstract class HandledScreenMixin_InterceptMouse<T extends ScreenHandler> extends Screen {
     @Shadow @Final protected T handler;
-    @Shadow @Final protected PlayerInventory playerInventory;
     @Shadow protected int x;
     @Shadow protected int y;
 
@@ -90,7 +88,7 @@ public abstract class HandledScreenMixin_InterceptMouse<T extends ScreenHandler>
             onMouseClick(slot, invSlot, clickData, actionType);
             return;
         }
-        ItemStack cursorStack = playerInventory.getCursorStack();
+        ItemStack cursorStack = handler.getCursorStack();
         boolean forceDrop = ModKeyBindings.isDown(ModKeyBindings.keyForceDrop);
         boolean canDrop = true;
         switch (oobDropClickOverride) {
@@ -107,7 +105,7 @@ public abstract class HandledScreenMixin_InterceptMouse<T extends ScreenHandler>
 
     @Inject(method = "drawMouseoverTooltip", at = @At("TAIL"))
     public void drawDropBlockTooltip(MatrixStack matrixStack, int mouseX, int mouseY, CallbackInfo ci) {
-        ItemStack cursorStack = playerInventory.getCursorStack();
+        ItemStack cursorStack = handler.getCursorStack();
         if (cursorStack.isEmpty() || !isClickOutsideBounds(mouseX, mouseY, x, y, 0))
             return;
         ArrayList<Text> tooltipTexts = new ArrayList<>();

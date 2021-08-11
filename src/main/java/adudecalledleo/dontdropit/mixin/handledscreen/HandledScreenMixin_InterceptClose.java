@@ -2,7 +2,6 @@ package adudecalledleo.dontdropit.mixin.handledscreen;
 
 import adudecalledleo.dontdropit.config.FavoredChecker;
 import adudecalledleo.dontdropit.config.ModConfig;
-import adudecalledleo.dontdropit.duck.ClientPlayNetworkHandlerHooks;
 import adudecalledleo.dontdropit.mixin.SlotAccessor;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
@@ -12,9 +11,12 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -22,18 +24,26 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(HandledScreen.class)
 public abstract class HandledScreenMixin_InterceptClose<T extends ScreenHandler> extends Screen {
     @Shadow @Final protected T handler;
-    @Shadow @Final protected PlayerInventory playerInventory;
+
+    @Shadow protected abstract void onMouseClick(Slot slot, int slotId, int button, SlotActionType actionType);
 
     private HandledScreenMixin_InterceptClose() {
         super(LiteralText.EMPTY);
         throw new RuntimeException("Mixin constructor called");
     }
 
-    @Inject(method = "onClose", at = @At("HEAD"), cancellable = true)
+    @Unique private PlayerInventory playerInventory;
+
+    @Inject(method = "<init>", at = @At("RETURN"))
+    private void capturePlayerInventory(T handler, PlayerInventory inventory, Text title, CallbackInfo ci) {
+        this.playerInventory = inventory;
+    }
+
+    @Inject(method = "onClose", at = @At("HEAD"))
     public void cursorCloseDropOverride(CallbackInfo ci) {
         if (client == null || client.player == null)
             return;
-        ItemStack cursorStack = playerInventory.getCursorStack();
+        ItemStack cursorStack = handler.getCursorStack();
         boolean canDrop = true;
         switch (ModConfig.get().general.cursorCloseDropOverride) {
         case FAVORITE_ITEMS:
@@ -45,26 +55,22 @@ public abstract class HandledScreenMixin_InterceptClose<T extends ScreenHandler>
         }
         if (cursorStack.isEmpty() || canDrop)
             return;
-        int targetSlot;
-        targetSlot = playerInventory.getEmptySlot();
-        if (targetSlot < 0)
-            targetSlot = playerInventory.getOccupiedSlotWithRoomForStack(cursorStack);
-        if (targetSlot >= 0) {
+        int targetInvId;
+        targetInvId = playerInventory.getEmptySlot();
+        if (targetInvId < 0)
+            targetInvId = playerInventory.getOccupiedSlotWithRoomForStack(cursorStack);
+        if (targetInvId >= 0) {
             // locate handler slot ID that matches the target inventory slot ID
-            int slotId = -1;
+            Slot targetSlot = null;
             for (Slot slot : handler.slots) {
-                if (slot.inventory == playerInventory && ((SlotAccessor) slot).getInventoryIndex() == targetSlot) {
-                    slotId = slot.id;
+                if (slot.inventory == playerInventory && ((SlotAccessor) slot).getInventoryIndex() == targetInvId) {
+                    targetSlot = slot;
                     break;
                 }
             }
-            if (slotId < 0)
+            if (targetSlot == null)
                 return;
-            short actionId = handler.getNextActionId(playerInventory);
-            ItemStack stack = handler.onSlotClick(slotId, 0, SlotActionType.PICKUP, client.player);
-            ci.cancel();
-            ((ClientPlayNetworkHandlerHooks) client.player.networkHandler)
-                    .dontdropit_clickSlotAndClose(handler.syncId, slotId, actionId, stack);
+            onMouseClick(targetSlot, -1, 0, SlotActionType.PICKUP);
         }
     }
 }
