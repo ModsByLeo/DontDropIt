@@ -20,24 +20,27 @@ public abstract class KeyboardMixin {
 
     @Inject(method = "onKey", at = @At(value = "HEAD"))
     public void updateModKeybindings(long window, int key, int scancode, int action, int mods, CallbackInfo ci) {
-        // this forces our key bindings to be updated in screens
+        // this forces our key bindings (and the drop key binding) to be updated in screens
         // this allows scancodes to work properly, since you can't poll them via GLFW
         if (client.currentScreen != null && client.getWindow().getHandle() == window) {
-            KeyBinding targetKeyBinding = null;
-            for (KeyBinding keyBinding : ModKeyBindings.all) {
-                if (keyBinding.matchesKey(key, scancode)) {
-                    targetKeyBinding = keyBinding;
-                    break;
+            KeyBinding targetBinding = null;
+            if (client.options.keyDrop.matchesKey(key, scancode))
+                targetBinding = client.options.keyDrop;
+            else {
+                for (KeyBinding keyBinding : ModKeyBindings.all) {
+                    if (keyBinding.matchesKey(key, scancode)) {
+                        targetBinding = keyBinding;
+                        break;
+                    }
                 }
             }
-            if (targetKeyBinding == null)
+            if (targetBinding == null)
                 return;
             if (action == GLFW_RELEASE)
-                targetKeyBinding.setPressed(false);
+                targetBinding.setPressed(false);
             else {
-                targetKeyBinding.setPressed(true);
-                ((KeyBindingAccessor) targetKeyBinding).setTimesPressed(
-                        ((KeyBindingAccessor) targetKeyBinding).getTimesPressed() + 1);
+                targetBinding.setPressed(true);
+                ((KeyBindingAccessor) targetBinding).setTimesPressed(((KeyBindingAccessor) targetBinding).getTimesPressed() + 1);
             }
         }
     }

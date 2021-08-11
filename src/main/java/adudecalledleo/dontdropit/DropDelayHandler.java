@@ -41,9 +41,10 @@ public class DropDelayHandler {
             }
         } else
             wasToggleDelayDown = false;
-        if (client.currentScreen instanceof HandledScreenHooks)
-            tickOnHandledScreen(client, (HandledScreenHooks) client.currentScreen);
-        else
+        if (client.currentScreen != null) {
+            if (client.currentScreen instanceof HandledScreenHooks)
+                tickOnHandledScreen(client, (HandledScreenHooks) client.currentScreen);
+        } else
             tickNormally(client);
     }
 

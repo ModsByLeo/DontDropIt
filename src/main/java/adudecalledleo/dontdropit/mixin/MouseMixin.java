@@ -19,23 +19,26 @@ public abstract class MouseMixin {
 
     @Inject(method = "onMouseButton", at = @At("HEAD"))
     public void updateModKeys(long window, int button, int action, int mods, CallbackInfo ci) {
-        // this forces our key bindings to be updated in screens
+        // this forces our key bindings (and the drop key binding) to be updated in screens
         if (client.currentScreen != null && client.getWindow().getHandle() == window) {
-            KeyBinding targetKeyBinding = null;
-            for (KeyBinding keyBinding : ModKeyBindings.all) {
-                if (keyBinding.matchesMouse(button)) {
-                    targetKeyBinding = keyBinding;
-                    break;
+            KeyBinding targetBinding = null;
+            if (client.options.keyDrop.matchesMouse(button))
+                targetBinding = client.options.keyDrop;
+            else {
+                for (KeyBinding keyBinding : ModKeyBindings.all) {
+                    if (keyBinding.matchesMouse(button)) {
+                        targetBinding = keyBinding;
+                        break;
+                    }
                 }
             }
-            if (targetKeyBinding == null)
+            if (targetBinding == null)
                 return;
             if (action == GLFW_RELEASE)
-                targetKeyBinding.setPressed(false);
+                targetBinding.setPressed(false);
             else {
-                targetKeyBinding.setPressed(true);
-                ((KeyBindingAccessor) targetKeyBinding).setTimesPressed(
-                        ((KeyBindingAccessor) targetKeyBinding).getTimesPressed() + 1);
+                targetBinding.setPressed(true);
+                ((KeyBindingAccessor) targetBinding).setTimesPressed(((KeyBindingAccessor) targetBinding).getTimesPressed() + 1);
             }
         }
     }
