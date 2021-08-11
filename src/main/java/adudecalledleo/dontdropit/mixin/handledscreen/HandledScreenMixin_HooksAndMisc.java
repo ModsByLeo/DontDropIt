@@ -8,7 +8,7 @@ import adudecalledleo.dontdropit.config.ModConfig;
 import adudecalledleo.dontdropit.duck.HandledScreenHooks;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.options.KeyBinding;
+import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;

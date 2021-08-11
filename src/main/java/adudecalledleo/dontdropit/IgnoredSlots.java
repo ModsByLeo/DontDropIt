@@ -1,7 +1,6 @@
 package adudecalledleo.dontdropit;
 
 import adudecalledleo.dontdropit.api.DontDropItApi;
-import adudecalledleo.lionutils.InitializerUtil;
 import it.unimi.dsi.fastutil.objects.Reference2BooleanMap;
 import it.unimi.dsi.fastutil.objects.Reference2BooleanOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ReferenceLinkedOpenHashSet;
@@ -12,9 +11,7 @@ import net.minecraft.screen.slot.Slot;
 import java.util.List;
 
 public class IgnoredSlots {
-    private IgnoredSlots() {
-        InitializerUtil.initCtor();
-    }
+    private IgnoredSlots() { }
 
     private static final ReferenceSet<Class<? extends Slot>> IGNORED_SLOTS = new ReferenceLinkedOpenHashSet<>();
     private static final Reference2BooleanMap<Class<? extends Slot>> CLASS_2_STATE_MAP = new Reference2BooleanOpenHashMap<>();

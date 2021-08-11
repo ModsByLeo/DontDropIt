@@ -2,8 +2,8 @@ package adudecalledleo.dontdropit;
 
 import adudecalledleo.dontdropit.config.FavoredChecker;
 import adudecalledleo.dontdropit.config.ModConfig;
-import adudecalledleo.lionutils.color.ColorUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
+
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.util.math.MatrixStack;
@@ -21,8 +21,12 @@ public class DropDelayRenderer {
         DrawableHelper.drawTexture(matrices, x, y, 18, 18, 18, 18, 18, 18);
     }
 
-    private static final int COLOR_FORCE = ColorUtil.pack(0xFF, 0x00, 0x00, 0x30);
-    private static final int COLOR_PROGRESS = ColorUtil.pack(0x00, 0xFF, 0x00, 0x30);
+    private static int pack(int r, int g, int b, int a) {
+        return (a & 0xFF) << 24 | (r & 0xFF) << 16 | (g & 0xFF) << 8 | b & 0xFF;
+    }
+
+    private static final int COLOR_FORCE = pack(0xFF, 0x00, 0x00, 0x30);
+    private static final int COLOR_PROGRESS = pack(0x00, 0xFF, 0x00, 0x30);
 
     public static void renderProgressOverlay(MatrixStack matrices, ItemStack stack, int x, int y, int w, int h) {
         if (!ModConfig.get().dropDelay.enabled)

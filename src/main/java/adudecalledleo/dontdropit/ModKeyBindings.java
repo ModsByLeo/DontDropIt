@@ -1,15 +1,13 @@
 package adudecalledleo.dontdropit;
 
-import adudecalledleo.lionutils.InitializerUtil;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.minecraft.client.options.KeyBinding;
+
+import net.minecraft.client.option.KeyBinding;
 
 import static org.lwjgl.glfw.GLFW.*;
 
 public class ModKeyBindings {
-    private ModKeyBindings() {
-        InitializerUtil.initCtor();
-    }
+    private ModKeyBindings() { }
 
     public static final KeyBinding keyDropStack = new KeyBinding("key.dontdropit.dropStack",
             GLFW_KEY_LEFT_CONTROL, "key.categories.dontdropit");

@@ -1,18 +1,18 @@
 package adudecalledleo.dontdropit.config;
 
-import me.sargunvohra.mcmods.autoconfig1u.AutoConfig;
-import me.sargunvohra.mcmods.autoconfig1u.ConfigData;
+import me.shedaniel.autoconfig.AutoConfig;
+import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
+
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
-
 import java.util.Collections;
 import java.util.Locale;
 
-import static me.sargunvohra.mcmods.autoconfig1u.util.Utils.getUnsafely;
-import static me.sargunvohra.mcmods.autoconfig1u.util.Utils.setUnsafely;
+import static me.shedaniel.autoconfig.util.Utils.getUnsafely;
+import static me.shedaniel.autoconfig.util.Utils.setUnsafely;
 
 public enum DropBehaviorOverride {
     FAVORITE_ITEMS, ALL_ITEMS, DISABLED;
@@ -34,8 +34,7 @@ public enum DropBehaviorOverride {
                     entryBuilder.startSelector(
                             new TranslatableText(i13n),
                             VALUES,
-                            getUnsafely(field, config, getUnsafely(field, defaults))
-                    )
+                            getUnsafely(field, config, getUnsafely(field, defaults)))
                             .setDefaultValue(() -> getUnsafely(field, defaults))
                             .setSaveConsumer(newValue -> setUnsafely(field, config, newValue))
                             .setNameProvider(DropBehaviorOverride::toText)
