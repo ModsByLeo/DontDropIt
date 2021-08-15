@@ -6,8 +6,7 @@ body:
     id: related_problem
     attributes:
       label: Is your feature request related to a problem?
-      description: >-
-        Please provide a clear and concise description of what the problem is.
+      description: Please provide a clear and concise description of what the problem is.
       placeholder: 'I'm always frustrated when [...]'
     validations:
       required: true
@@ -15,21 +14,18 @@ body:
     id: solution
     attributes:
       label: Describe the solution you'd like:
-      description: >-
-        Please provide a clear and concise description of what you want to happen.
+      description: Please provide a clear and concise description of what you want to happen.
     validations:
       required: true
   - type: textarea
     id: alternate_solutions
     attributes:
       label: Describe alternatives you've considered:
-      description: >-
-        Please provide a clear and concise description of any alternative solutions or features you've considered.
+      description: Please provide a clear and concise description of any alternative solutions or features you've considered.
     validations:
       required: true
    - type: textarea
     id: additional
     attributes:
       label: Additional information
-      description: >-
-        Add any other context or screenshots about the feature request here.
+      description: Add any other context or screenshots about the feature request here.
