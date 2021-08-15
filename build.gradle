@@ -47,7 +47,10 @@ dependencies {
     // PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
     // You may need to force-disable transitiveness on them.
     depImpl("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}", true)
-    //depImpl("de.siphalor:amecsapi-1.17:1+", true)
+    // Amecs API automatically brings in (a broken version of) NMUK, which we don't need
+    include(modImplementation("de.siphalor:amecsapi-1.17:1+") {
+        exclude group: "de.siphalor", module: "nmuk-1.17"
+    })
     depImpl "com.terraformersmc:modmenu:${project.modmenu_version}"
 }
 
