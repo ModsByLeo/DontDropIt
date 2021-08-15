@@ -4,7 +4,6 @@ import adudecalledleo.dontdropit.config.FavoredChecker;
 import adudecalledleo.dontdropit.config.ModConfig;
 import com.mojang.blaze3d.systems.RenderSystem;
 
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
@@ -17,7 +16,7 @@ public class DropDelayRenderer {
     public static void renderFavoriteIcon(MatrixStack matrices, ItemStack stack, int x, int y) {
         if (!ModConfig.get().favorites.drawOverlay || !FavoredChecker.isStackFavored(stack))
             return;
-        MinecraftClient.getInstance().getTextureManager().bindTexture(TEX_FAVORITE);
+        RenderSystem.setShaderTexture(0, TEX_FAVORITE);
         DrawableHelper.drawTexture(matrices, x, y, 18, 18, 18, 18, 18, 18);
     }
 
@@ -48,9 +47,9 @@ public class DropDelayRenderer {
             return;
         RenderSystem.enableBlend();
         matrixStack.push();
-        matrixStack.translate(0, 0, z);
+        matrixStack.translate(0, 0, z + 200);
         renderFavoriteIcon(matrixStack, stack, x - 1, y - 1);
-        matrixStack.translate(0, 0, 200);
+        matrixStack.translate(0, 0, 5);
         RenderSystem.colorMask(true, true, true, false);
         renderProgressOverlay(matrixStack, stack, x, y, 16, 16);
         RenderSystem.colorMask(true, true, true, true);
