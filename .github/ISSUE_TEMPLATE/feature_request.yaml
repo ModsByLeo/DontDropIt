@@ -1,30 +1,36 @@
 name: Feature Request
-description: ' Suggest an ieda for this project. '
-labels: enhancement
+description: ' Use this template if you want to request a feature for this project. '
+labels: bug
 body:
+  - type: checkboxes
+    attributes:
+      label: Is there an existing issue for this?
+      description: Please search to see if an issue already exists for your requested feature.
+      options:
+      - label: I have searched the existing issues
+        required: true
   - type: textarea
     id: related_problem
     attributes:
-      label: Is your feature request related to a problem?
+      label: Related problem
       description: Please provide a clear and concise description of what the problem is.
-      placeholder: 'I'm always frustrated when [...]'
     validations:
       required: true
   - type: textarea
     id: solution
     attributes:
-      label: Describe the solution you'd like:
+      label: Suggested solution
       description: Please provide a clear and concise description of what you want to happen.
     validations:
       required: true
   - type: textarea
     id: alternate_solutions
     attributes:
-      label: Describe alternatives you've considered:
+      label: Alternative solutions
       description: Please provide a clear and concise description of any alternative solutions or features you've considered.
     validations:
       required: true
-   - type: textarea
+  - type: textarea
     id: additional
     attributes:
       label: Additional information
