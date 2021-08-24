@@ -1,6 +1,6 @@
 name: Feature Request
 description: ' Use this template if you want to request a feature for this project. '
-labels: bug
+labels: enhancement
 body:
   - type: checkboxes
     attributes:
