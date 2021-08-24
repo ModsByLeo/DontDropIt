@@ -1,20 +1,20 @@
 package adudecalledleo.dontdropit;
 
 import adudecalledleo.dontdropit.api.DontDropItApi;
+import adudecalledleo.dontdropit.config.DelayActivationMode;
 import adudecalledleo.dontdropit.config.DropBehaviorOverride;
 import adudecalledleo.dontdropit.config.ModConfig;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.util.Collections;
 import java.util.Set;
 
@@ -31,6 +31,7 @@ public class DontDropIt implements ClientModInitializer, DontDropItApi {
     @Override
     public void onInitializeClient() {
         DropBehaviorOverride.registerConfigGuiProvider(ModConfig.class);
+        DelayActivationMode.registerConfigGuiProvider(ModConfig.class);
         AutoConfig.register(ModConfig.class, JanksonConfigSerializer::new)
                 .registerSaveListener((manager, data) -> {
                     data.postSave();

@@ -28,10 +28,10 @@ public class DropDelayRenderer {
     private static final int COLOR_PROGRESS = pack(0x00, 0xFF, 0x00, 0x30);
 
     public static void renderProgressOverlay(MatrixStack matrices, ItemStack stack, int x, int y, int w, int h) {
-        if (!ModConfig.get().dropDelay.enabled)
-            return;
         ItemStack currentStack = DropDelayHandler.getCurrentStack();
         if (currentStack.isEmpty() || currentStack != stack)
+            return;
+        if (!ModConfig.get().dropDelay.mode.isEnabled(stack))
             return;
         if (!FavoredChecker.canDropStack(stack))
             return;

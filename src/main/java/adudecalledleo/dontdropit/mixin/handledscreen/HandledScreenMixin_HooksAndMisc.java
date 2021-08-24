@@ -61,7 +61,8 @@ public abstract class HandledScreenMixin_HooksAndMisc extends Screen implements 
     public boolean disableDropKey(KeyBinding keyBinding, int keyCode, int scanCode) {
         if (focusedSlot == null || IgnoredSlots.isSlotIgnored(focusedSlot))
             return keyBinding.matchesKey(keyCode, scanCode);
-        if (ModConfig.get().dropDelay.enabled)
+        ItemStack stack = dontdropit_getSelectedStack();
+        if (ModConfig.get().dropDelay.mode.isEnabled(stack))
             return false;
         return dontdropit_canDrop()
                 && FavoredChecker.canDropStack(dontdropit_getSelectedStack())

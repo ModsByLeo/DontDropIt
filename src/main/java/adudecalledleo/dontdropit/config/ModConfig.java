@@ -5,6 +5,7 @@ import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
+import me.shedaniel.cloth.clothconfig.shadowed.blue.endless.jankson.annotation.Nullable;
 
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.Item;
@@ -12,7 +13,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -43,7 +43,8 @@ public class ModConfig implements ConfigData {
 
     public static class DropDelay {
         @ConfigEntry.Gui.Tooltip(count = 3)
-        public boolean enabled = true;
+        @Nullable
+        public DelayActivationMode mode = DelayActivationMode.ENABLED;
         @ConfigEntry.BoundedDiscrete(max = 200, min = 1)
         @ConfigEntry.Gui.Tooltip(count = 3)
         public long ticks = 10;

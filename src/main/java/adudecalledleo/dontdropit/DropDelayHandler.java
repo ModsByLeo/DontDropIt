@@ -1,8 +1,10 @@
 package adudecalledleo.dontdropit;
 
+import adudecalledleo.dontdropit.config.DelayActivationMode;
 import adudecalledleo.dontdropit.config.FavoredChecker;
 import adudecalledleo.dontdropit.config.ModConfig;
 import adudecalledleo.dontdropit.duck.HandledScreenHooks;
+
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
@@ -15,6 +17,7 @@ public class DropDelayHandler {
     private static ItemStack currentStack;
     private static boolean wasDropStackDown;
     private static boolean wasToggleDelayDown = false;
+    private static DelayActivationMode originalDelayActivationMode = null;
 
     public static void reset() {
         dropDelayCounter = 0;
@@ -36,7 +39,13 @@ public class DropDelayHandler {
             if (!wasToggleDelayDown) {
                 wasToggleDelayDown = true;
                 ModConfig config = ModConfig.get();
-                config.dropDelay.enabled = !config.dropDelay.enabled;
+                if (originalDelayActivationMode == null) {
+                    originalDelayActivationMode = config.dropDelay.mode;
+                    config.dropDelay.mode = DelayActivationMode.DISABLED;
+                } else {
+                    config.dropDelay.mode = originalDelayActivationMode;
+                    originalDelayActivationMode = null;
+                }
                 ModConfig.save();
             }
         } else
@@ -51,20 +60,20 @@ public class DropDelayHandler {
     private static void tickNormally(MinecraftClient client) {
         if (client.player == null)
             return;
-        if (ModConfig.get().dropDelay.enabled) {
+        ItemStack stack = client.player.getInventory().getMainHandStack();
+        if (ModConfig.get().dropDelay.mode.isEnabled(stack)) {
             if (client.player.isSpectator()) {
                 reset();
                 return;
             }
-            doDropProgress(client, client.player.getInventory().getMainHandStack(), entireStack -> {
+            doDropProgress(client, stack, entireStack -> {
                 if (client.player.dropSelectedItem(entireStack))
                     client.player.swingHand(Hand.MAIN_HAND);
             });
         } else {
             reset();
             while (client.options.keyDrop.wasPressed()) {
-                ItemStack selectedStack = client.player.getInventory().getMainHandStack();
-                if (FavoredChecker.isStackFavored(selectedStack))
+                if (FavoredChecker.isStackFavored(stack))
                     continue;
                 if (!client.player.isSpectator() && client.player.dropSelectedItem(ModKeyBindings.isDown(keyDropStack)))
                     client.player.swingHand(Hand.MAIN_HAND);
@@ -75,12 +84,13 @@ public class DropDelayHandler {
     private static void tickOnHandledScreen(MinecraftClient client, HandledScreenHooks screenHooks) {
         if (client.player == null)
             return;
-        if (ModConfig.get().dropDelay.enabled) {
+        ItemStack stack = screenHooks.dontdropit_getSelectedStack();
+        if (ModConfig.get().dropDelay.mode.isEnabled(stack)) {
             if (client.player.isSpectator() || !screenHooks.dontdropit_canDrop()) {
                 reset();
                 return;
             }
-            doDropProgress(client, screenHooks.dontdropit_getSelectedStack(), screenHooks::dontdropit_drop);
+            doDropProgress(client, stack, screenHooks::dontdropit_drop);
         }
         else
             reset();
