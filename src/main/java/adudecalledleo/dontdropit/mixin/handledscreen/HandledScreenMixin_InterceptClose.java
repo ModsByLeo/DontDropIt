@@ -2,6 +2,7 @@ package adudecalledleo.dontdropit.mixin.handledscreen;
 
 import adudecalledleo.dontdropit.config.FavoredChecker;
 import adudecalledleo.dontdropit.config.ModConfig;
+import adudecalledleo.dontdropit.mixin.KeyBindingAccessor;
 import adudecalledleo.dontdropit.mixin.SlotAccessor;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
@@ -43,6 +44,10 @@ public abstract class HandledScreenMixin_InterceptClose<T extends ScreenHandler>
     public void cursorCloseDropOverride(CallbackInfo ci) {
         if (client == null || client.player == null)
             return;
+        // eat all drop key presses, so we don't drop hotbar items if drop delay is disabled
+        client.options.keyDrop.setPressed(false);
+        ((KeyBindingAccessor) client.options.keyDrop).setTimesPressed(0);
+
         ItemStack cursorStack = handler.getCursorStack();
         boolean canDrop = true;
         switch (ModConfig.get().general.cursorCloseDropOverride) {
