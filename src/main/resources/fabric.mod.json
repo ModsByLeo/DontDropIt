@@ -9,7 +9,8 @@
   ],
   "contact": {
     "homepage": "https://curseforge.com/minecraft/mc-mods/dont-drop-it",
-    "sources": "https://github.com/Leo40Git/DontDropIt"
+    "sources": "https://github.com/Leo40Git/DontDropIt",
+    "issues": "https://github.com/Leo40Git/DontDropIt/issues"
   },
   "license": "MIT",
   "icon": "assets/dontdropit/icon.png",
