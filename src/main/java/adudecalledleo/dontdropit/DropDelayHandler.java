@@ -5,6 +5,7 @@ import adudecalledleo.dontdropit.config.FavoredChecker;
 import adudecalledleo.dontdropit.config.ModConfig;
 import adudecalledleo.dontdropit.duck.HandledScreenHooks;
 
+import adudecalledleo.dontdropit.mixin.KeyBindingAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
@@ -53,6 +54,8 @@ public class DropDelayHandler {
         if (client.currentScreen != null) {
             if (client.currentScreen instanceof HandledScreenHooks)
                 tickOnHandledScreen(client, (HandledScreenHooks) client.currentScreen);
+            else
+                reset();
         } else
             tickNormally(client);
     }
@@ -103,6 +106,7 @@ public class DropDelayHandler {
 
     private static void doDropProgress(MinecraftClient client, ItemStack stack, DropAction dropAction) {
         if (ModKeyBindings.isDown(client.options.keyDrop)) {
+            ((KeyBindingAccessor) client.options.keyDrop).setTimesPressed(0); // eat all presses!
             if (dropDelayCounter < getCounterMax()) {
                 boolean isDropStackDown = ModKeyBindings.isDown(keyDropStack) && stack.getCount() > 1;
                 if (dropDelayCounter == 0)
@@ -111,9 +115,11 @@ public class DropDelayHandler {
                     dropDelayCounter = 0;
                     return;
                 }
-                if (!FavoredChecker.canDropStack(stack)) {
-                    dropDelayCounter = 0;
-                    return;
+                if (ModConfig.get().dropDelay.mode == DelayActivationMode.ENABLED) {
+                    if (!FavoredChecker.canDropStack(stack)) {
+                        dropDelayCounter = 0;
+                        return;
+                    }
                 }
                 if (dropDelayCounter > 0 && stack != currentStack)
                     dropDelayCounter = -1;

@@ -3,7 +3,6 @@ package adudecalledleo.dontdropit;
 import adudecalledleo.dontdropit.config.FavoredChecker;
 import adudecalledleo.dontdropit.config.ModConfig;
 import com.mojang.blaze3d.systems.RenderSystem;
-
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
@@ -32,8 +31,6 @@ public class DropDelayRenderer {
         if (currentStack.isEmpty() || currentStack != stack)
             return;
         if (!ModConfig.get().dropDelay.mode.isEnabled(stack))
-            return;
-        if (!FavoredChecker.canDropStack(stack))
             return;
         if (stack.getCount() > 1 && DropDelayHandler.isDroppingEntireStack())
             DrawableHelper.fill(matrices, x, y, x + w, y + h, COLOR_FORCE);

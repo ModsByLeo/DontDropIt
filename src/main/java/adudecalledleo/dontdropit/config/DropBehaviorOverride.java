@@ -33,8 +33,8 @@ public enum DropBehaviorOverride {
                 Collections.singletonList(
                     entryBuilder.startSelector(
                             new TranslatableText(i13n),
-                            VALUES,
-                            getUnsafely(field, config, getUnsafely(field, defaults)))
+                                    VALUES,
+                                    getUnsafely(field, config, getUnsafely(field, defaults)))
                             .setDefaultValue(() -> getUnsafely(field, defaults))
                             .setSaveConsumer(newValue -> setUnsafely(field, config, newValue))
                             .setNameProvider(DropBehaviorOverride::toText)

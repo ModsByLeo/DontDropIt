@@ -20,16 +20,11 @@ public enum DelayActivationMode {
     ENABLED, FAVORITES_ONLY, DISABLED;
 
     public boolean isEnabled(ItemStack stack) {
-        switch (this) {
-        case DISABLED:
-            return false;
-        case FAVORITES_ONLY:
-            if (!FavoredChecker.isStackFavored(stack))
-                return false;
-        case ENABLED:
-            return true;
-        }
-        throw new InternalError(this + " is not handled?!");
+        return switch (this) {
+            case DISABLED -> false;
+            case FAVORITES_ONLY -> FavoredChecker.isStackFavored(stack);
+            case ENABLED -> true;
+        };
     }
 
     public Text toText() {
@@ -47,13 +42,13 @@ public enum DelayActivationMode {
         AutoConfig.getGuiRegistry(configClass).registerTypeProvider((i13n, field, config, defaults, registry) ->
                 Collections.singletonList(
                         entryBuilder.startSelector(
-                                        new TranslatableText(i13n),
+                                new TranslatableText(i13n),
                                         VALUES,
                                         getUnsafely(field, config, getUnsafely(field, defaults)))
                                 .setDefaultValue(() -> getUnsafely(field, defaults))
                                 .setSaveConsumer(newValue -> setUnsafely(field, config, newValue))
                                 .setNameProvider(DelayActivationMode::toText)
                                 .build()
-                ), DropBehaviorOverride.class);
+                ), DelayActivationMode.class);
     }
 }
