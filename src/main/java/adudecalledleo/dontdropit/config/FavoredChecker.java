@@ -1,7 +1,7 @@
 package adudecalledleo.dontdropit.config;
 
 import adudecalledleo.dontdropit.ModKeyBindings;
-import net.fabricmc.fabric.api.tag.TagRegistry;
+import net.fabricmc.fabric.api.tag.TagFactory;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.EnchantedBookItem;
@@ -26,7 +26,7 @@ public class FavoredChecker {
     static void updateFavoredSets(ModConfig config) {
         updateFavoredSet(FAVORED_ITEMS, config.favorites.items, Registry.ITEM::get);
         updateFavoredSet(FAVORED_ENCHANTMENTS, config.favorites.enchantments, Registry.ENCHANTMENT::get);
-        updateFavoredSet(FAVORED_ITEM_TAGS, config.favorites.tags, TagRegistry::item);
+        updateFavoredSet(FAVORED_ITEM_TAGS, config.favorites.tags, TagFactory.ITEM::create);
     }
 
     private static <T> void updateFavoredSet(HashSet<T> set, List<String> keys, Function<Identifier, T> function) {
