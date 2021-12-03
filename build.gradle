@@ -1,9 +1,9 @@
 plugins {
-    id 'fabric-loom' version '0.9-SNAPSHOT'
+    id 'fabric-loom' version '0.10-SNAPSHOT'
 }
 
-sourceCompatibility = JavaVersion.VERSION_16
-targetCompatibility = JavaVersion.VERSION_16
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
 
 archivesBaseName = project.archives_base_name
 version = project.mod_version
@@ -20,18 +20,20 @@ repositories {
 }
 
 def depImpl(String id, boolean include = false) {
-    dependencies.modImplementation (id) {
+    def dep = dependencies.modImplementation (id) {
         exclude group: "net.fabricmc.fabric-api"
+        exclude module: "fabric-loader"
     }
-    if (include)
-        dependencies.include (id) {
-            exclude group: "net.fabricmc.fabric-api"
-        }
+    if (include) {
+        dependencies.include(dep)
+    }
+
 }
 
-def depRuntime(String id) {
-    dependencies.modRuntime(id) {
+def depRuntimeOnly(String id) {
+    dependencies.modRuntimeOnly(id) {
         exclude group: "net.fabricmc.fabric-api"
+        exclude module: "fabric-loader"
     }
 }
 
@@ -48,8 +50,8 @@ dependencies {
     // You may need to force-disable transitiveness on them.
     depImpl("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}", true)
     // Amecs API automatically brings in (a broken version of) NMUK, which we don't need
-    include(modImplementation("de.siphalor:amecsapi-1.17:1+") {
-        exclude group: "de.siphalor", module: "nmuk-1.17"
+    include(modImplementation("de.siphalor:amecsapi-1.18:1+") {
+        exclude group: "de.siphalor", module: "nmuk-1.18"
     })
     depImpl "com.terraformersmc:modmenu:${project.modmenu_version}"
 }
@@ -57,16 +59,22 @@ dependencies {
 if (Boolean.valueOf(project.use_runtime_deps)) {
     repositories {
         maven { url "https://jitpack.io" }
+        maven {
+            name = "Gegy's Maven"
+            url = "https://maven.gegy.dev/"
+        }
     }
 
     dependencies {
         // DataBreaker applies a number of patches to eliminate the loading of data fixers
         // This greatly reduces the amount of time needed to start the game, but is generally unsafe in production
-        depRuntime "com.github.SuperCoder7979:databreaker:${project.databreaker_version}"
+        depRuntimeOnly "supercoder79:databreaker:${project.databreaker_version}"
         // JellySquid's elemental optimizations
+        /* (DISABLED BECAUSE JITPACK SUCKS)
         depRuntime "com.github.jellysquid3:lithium-fabric:${project.lithium_version}"
         depRuntime "com.github.jellysquid3:phosphor-fabric:${project.phosphor_version}"
         depRuntime "com.github.jellysquid3:sodium-fabric:${project.sodium_version}"
+         */
     }
 }
 

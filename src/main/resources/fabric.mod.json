@@ -33,7 +33,7 @@
   "depends": {
     "fabricloader": ">=0.9.3+build.207",
     "fabric": "*",
-    "minecraft": "~1.17.1"
+    "minecraft": "~1.18"
   },
   "suggests": {
     "modupdater": "*"
