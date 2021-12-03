@@ -33,7 +33,7 @@ public class IgnoredSlots {
     }
 
     public static boolean isClassIgnored(Class<? extends Slot> slotClass) {
-        return CLASS_2_STATE_MAP.computeBooleanIfAbsent(slotClass, IgnoredSlots::isClassIgnored0);
+        return CLASS_2_STATE_MAP.computeIfAbsent(slotClass, IgnoredSlots::isClassIgnored0);
     }
 
     public static boolean isSlotIgnored(Slot slot) {

@@ -32,7 +32,8 @@ public class DropDelayRenderer {
             return;
         if (!ModConfig.get().dropDelay.mode.isEnabled(stack))
             return;
-        if (stack.getCount() > 1 && DropDelayHandler.isDroppingEntireStack())
+        if ((stack.getCount() > 1 && DropDelayHandler.isDroppingEntireStack())
+                || ModKeyBindings.isDown(ModKeyBindings.keyForceDrop))
             DrawableHelper.fill(matrices, x, y, x + w, y + h, COLOR_FORCE);
         long counter = DropDelayHandler.getCounter();
         int progHeight = MathHelper.floor((counter / (double) DropDelayHandler.getCounterMax()) * h);
