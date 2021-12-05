@@ -5,14 +5,15 @@
   "compatibilityLevel": "JAVA_16",
   "client": [
     "InGameHudMixin",
-    "MinecraftClientMixin",
-    "SlotAccessor",
     "KeyBindingAccessor",
     "KeyboardMixin",
+    "MinecraftClientMixin",
     "MouseMixin",
+    "SlotAccessor",
+    "handledscreen.HandledScreenAccessor",
     "handledscreen.HandledScreenMixin_HooksAndMisc",
-    "handledscreen.HandledScreenMixin_InterceptMouse",
-    "handledscreen.HandledScreenMixin_InterceptClose"
+    "handledscreen.HandledScreenMixin_InterceptClose",
+    "handledscreen.HandledScreenMixin_InterceptMouse"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -10,6 +10,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import net.minecraft.client.Keyboard;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.option.KeyBinding;
 
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
@@ -19,10 +20,17 @@ public abstract class KeyboardMixin {
     @Shadow @Final private MinecraftClient client;
 
     @Inject(method = "onKey", at = @At(value = "HEAD"))
-    public void updateModKeybindings(long window, int key, int scancode, int action, int mods, CallbackInfo ci) {
+    public void updateModKeys(long window, int key, int scancode, int action, int mods, CallbackInfo ci) {
         // this forces our key bindings (and the drop key binding) to be updated in screens
         // this allows scancodes to work properly, since you can't poll them via GLFW
         if (client.currentScreen != null && client.getWindow().getHandle() == window) {
+            if (client.currentScreen.getFocused() instanceof TextFieldWidget textFieldWidget) {
+                if (textFieldWidget.isActive()) {
+                    // a text field widget is active, don't update keys!
+                    return;
+                }
+            }
+
             KeyBinding targetBinding = null;
             if (client.options.keyDrop.matchesKey(key, scancode))
                 targetBinding = client.options.keyDrop;
