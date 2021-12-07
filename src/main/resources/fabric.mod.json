@@ -35,6 +35,9 @@
     "fabric": "*",
     "minecraft": "~1.18"
   },
+  "breaks": {
+    "inventory_control_tweaks": "*"
+  },
   "suggests": {
     "modupdater": "*"
   },
