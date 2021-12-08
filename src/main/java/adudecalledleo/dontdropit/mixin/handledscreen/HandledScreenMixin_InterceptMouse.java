@@ -10,6 +10,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
@@ -29,7 +30,7 @@ import java.util.ArrayList;
 
 import static adudecalledleo.dontdropit.ModKeyBindings.keyForceDrop;
 
-@Mixin(value = HandledScreen.class, priority = 500) // lower priority to get processed first
+@Mixin(HandledScreen.class)
 public abstract class HandledScreenMixin_InterceptMouse<T extends ScreenHandler> extends Screen {
     @Shadow @Final protected T handler;
     @Shadow protected int x;
@@ -44,24 +45,46 @@ public abstract class HandledScreenMixin_InterceptMouse<T extends ScreenHandler>
     }
 
     @Unique
-    private void disableFavoredShiftClick(Slot slot, int invSlot, int clickData, SlotActionType actionType) {
+    private boolean shouldAllowShiftClick(Slot slot, int invSlot, SlotActionType actionType) {
         if (!ModConfig.get().favorites.disableShiftClick || actionType != SlotActionType.QUICK_MOVE) {
-            onMouseClick(slot, invSlot, clickData, actionType);
-            return;
+            return true;
         }
-        if (slot == null && invSlot >= 0)
+        if (slot == null && invSlot >= 0) {
             slot = handler.slots.get(invSlot);
-        if (slot == null || !FavoredChecker.isStackFavored(slot.getStack()))
-            onMouseClick(slot, invSlot, clickData, actionType);
+        }
+        if (slot == null) {
+            return true;
+        }
+        return !FavoredChecker.isStackFavored(slot.getStack());
     }
 
-    @Redirect(method = "mouseClicked",
-              at = @At(value = "INVOKE",
-                       target = "Lnet/minecraft/client/gui/screen/ingame/HandledScreen;onMouseClick(Lnet/minecraft/screen/slot/Slot;IILnet/minecraft/screen/slot/SlotActionType;)V",
-                       ordinal = 1))
-    public void disableFavoredShiftClick_mouseClicked(@SuppressWarnings("rawtypes") HandledScreen handledScreen,
-            Slot slot, int invSlot, int clickData, SlotActionType actionType) {
-        disableFavoredShiftClick(slot, invSlot, clickData, actionType);
+    @Unique
+    private void disableFavoredShiftClick(Slot slot, int invSlot, int clickData, SlotActionType actionType) {
+        if (shouldAllowShiftClick(slot, invSlot, actionType)) {
+            onMouseClick(slot, invSlot, clickData, actionType);
+        }
+    }
+
+    @Unique
+    private boolean dontdropit$cancelOnMouseClick;
+
+    @ModifyArg(method = "mouseClicked", index = 0,
+            at = @At(value = "INVOKE",
+                    target = "Lnet/minecraft/client/gui/screen/ingame/HandledScreen;onMouseClick(Lnet/minecraft/screen/slot/Slot;IILnet/minecraft/screen/slot/SlotActionType;)V",
+                    ordinal = 1))
+    public Slot disableFavoredShiftClick_mouseClicked(Slot slot, int invSlot, int clickData, SlotActionType actionType) {
+        dontdropit$cancelOnMouseClick = !shouldAllowShiftClick(slot, invSlot, actionType);
+        return slot;
+    }
+
+    @Inject(method = "onMouseClick(Lnet/minecraft/screen/slot/Slot;IILnet/minecraft/screen/slot/SlotActionType;)V",
+            at = @At("HEAD"),
+            cancellable = true)
+    public void cancelOnMouseClick(Slot slot, int slotId, int button, SlotActionType actionType, CallbackInfo ci) {
+        if (dontdropit$cancelOnMouseClick) {
+            dontdropit$cancelOnMouseClick = false;
+            ci.cancel();
+        }
     }
 
     @Redirect(method = "mouseReleased",
