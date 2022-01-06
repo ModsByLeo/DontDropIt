@@ -13,10 +13,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
+
+import java.util.*;
 
 import static adudecalledleo.dontdropit.config.ModConfigLogger.LOGGER;
 
@@ -63,17 +61,19 @@ public class ModConfig implements ConfigData {
         public boolean disableShiftClick = false;
         @ConfigEntry.Gui.Tooltip(count = 2)
         public boolean drawOverlay = true;
+        @ConfigEntry.Gui.Tooltip(count = 3)
+        public Boolean restoreDefaults = null;
         @ConfigEntry.Gui.PrefixText
         @ConfigEntry.Gui.Tooltip
-        public List<String> items = getRareItemIds();
+        public List<String> items = null;
         @ConfigEntry.Gui.PrefixText
         @ConfigEntry.Gui.Tooltip
-        public List<String> enchantments = getEnchantmentIds();
+        public List<String> enchantments = null;
         @ConfigEntry.Gui.Tooltip(count = 3)
         public boolean enchIgnoreInvalidTargets = true;
         @ConfigEntry.Gui.PrefixText
         @ConfigEntry.Gui.Tooltip(count = 2)
-        public List<String> tags = new ArrayList<>();
+        public List<String> tags = null;
 
         private static List<String> getRareItemIds() {
             ArrayList<String> itemIds = new ArrayList<>();
@@ -100,8 +100,24 @@ public class ModConfig implements ConfigData {
             items = init(items);
             enchantments = init(enchantments);
             tags = init(tags);
-            removeInvalidIdsFrom(items, "items", Registry.ITEM);
-            removeInvalidIdsFrom(enchantments, "enchantments", Registry.ENCHANTMENT);
+
+            boolean removeInvalidIds = true;
+            if (restoreDefaults == null || restoreDefaults == Boolean.TRUE) {
+                // resets favored ID lists IF:
+                // 1. restoreDefaults was set to true (user wants to reset)
+                // 2. restoreDefaults is null and all lists are currently empty (newly created config)
+                if (restoreDefaults == Boolean.TRUE || (items.isEmpty() && enchantments.isEmpty() && tags.isEmpty())) {
+                    items = getRareItemIds();
+                    enchantments = getEnchantmentIds();
+                    tags.clear();
+                    removeInvalidIds = false; // can safely be skipped, since default items/enchantment IDs are always valid
+                }
+            }
+            restoreDefaults = Boolean.FALSE;
+            if (removeInvalidIds) {
+                removeInvalidIdsFrom(items, "items", Registry.ITEM);
+                removeInvalidIdsFrom(enchantments, "enchantments", Registry.ENCHANTMENT);
+            }
         }
 
         private List<String> init(List<String> list) {
@@ -146,12 +162,11 @@ public class ModConfig implements ConfigData {
         if (favorites == null) {
             LOGGER.warn("Favorites section is missing, resetting it to default values");
             favorites = new Favorites();
-        } else
-            favorites.postLoad();
-        FavoredChecker.updateFavoredSets(this);
+        }
+        postUpdate();
     }
 
-    public void postSave() {
+    public void postUpdate() {
         favorites.postLoad();
         FavoredChecker.updateFavoredSets(this);
     }

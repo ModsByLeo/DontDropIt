@@ -34,7 +34,7 @@ public class DontDropIt implements ClientModInitializer, DontDropItApi {
         DelayActivationMode.registerConfigGuiProvider(ModConfig.class);
         AutoConfig.register(ModConfig.class, JanksonConfigSerializer::new)
                 .registerSaveListener((manager, data) -> {
-                    data.postSave();
+                    data.postUpdate();
                     return ActionResult.PASS;
                 });
         ModKeyBindings.register();
