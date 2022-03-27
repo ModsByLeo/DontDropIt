@@ -1,5 +1,8 @@
 package adudecalledleo.dontdropit.config;
 
+import java.util.*;
+import java.util.stream.Collectors;
+
 import adudecalledleo.dontdropit.DontDropIt;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.ConfigData;
@@ -14,7 +17,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
 
-import java.util.*;
+import org.quiltmc.qsl.tag.api.TagRegistry;
 
 import static adudecalledleo.dontdropit.config.ModConfigLogger.LOGGER;
 
@@ -117,6 +120,7 @@ public class ModConfig implements ConfigData {
             if (removeInvalidIds) {
                 removeInvalidIdsFrom(items, "items", Registry.ITEM);
                 removeInvalidIdsFrom(enchantments, "enchantments", Registry.ENCHANTMENT);
+                removeInvalidTagIdsFrom(tags);
             }
         }
 
@@ -139,6 +143,28 @@ public class ModConfig implements ConfigData {
                 }
                 if (!registry.containsId(id)) {
                     LOGGER.warn("Favorites: Found unregistered identifier \"{}\" in favored {} list, removing", id.toString(), listName);
+                    it.remove();
+                }
+            }
+        }
+
+        private void removeInvalidTagIdsFrom(List<String> list) {
+            // collect all valid item tag IDs
+            Set<Identifier> tagIds = TagRegistry.stream(Registry.ITEM_KEY)
+                    .map(entry -> entry.key().id())
+                    .collect(Collectors.toSet());
+
+            Iterator<String> it = list.iterator();
+            while (it.hasNext()) {
+                String idStr = it.next();
+                Identifier id = Identifier.tryParse(idStr);
+                if (id == null) {
+                    LOGGER.warn("Favorites: Found invalid identifier \"{}\" in favored tags list, removing", idStr);
+                    it.remove();
+                    continue;
+                }
+                if (!tagIds.contains(id)) {
+                    LOGGER.warn("Favorites: Found unregistered identifier \"{}\" in favored tags list, removing", id.toString());
                     it.remove();
                 }
             }

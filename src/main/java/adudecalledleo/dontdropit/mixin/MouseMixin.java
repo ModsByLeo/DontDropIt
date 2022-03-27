@@ -1,14 +1,6 @@
 package adudecalledleo.dontdropit.mixin;
 
 import adudecalledleo.dontdropit.ModKeyBindings;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.Mouse;
-import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.screen.slot.Slot;
-
 import adudecalledleo.dontdropit.mixin.handledscreen.HandledScreenAccessor;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -16,6 +8,14 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Mouse;
+import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.option.KeyBinding;
+import net.minecraft.screen.slot.Slot;
 
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 
@@ -44,8 +44,8 @@ public abstract class MouseMixin {
             }
 
             KeyBinding targetBinding = null;
-            if (client.options.keyDrop.matchesMouse(button))
-                targetBinding = client.options.keyDrop;
+            if (client.options.dropKey.matchesMouse(button))
+                targetBinding = client.options.dropKey;
             else {
                 for (KeyBinding keyBinding : ModKeyBindings.all) {
                     if (keyBinding.matchesMouse(button)) {

@@ -4,8 +4,8 @@ import adudecalledleo.dontdropit.config.DelayActivationMode;
 import adudecalledleo.dontdropit.config.FavoredChecker;
 import adudecalledleo.dontdropit.config.ModConfig;
 import adudecalledleo.dontdropit.duck.HandledScreenHooks;
-
 import adudecalledleo.dontdropit.mixin.KeyBindingAccessor;
+
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
@@ -75,7 +75,7 @@ public class DropDelayHandler {
             });
         } else {
             reset();
-            while (client.options.keyDrop.wasPressed()) {
+            while (client.options.dropKey.wasPressed()) {
                 if (FavoredChecker.isStackFavored(stack))
                     continue;
                 if (!client.player.isSpectator() && client.player.dropSelectedItem(ModKeyBindings.isDown(keyDropStack)))
@@ -105,8 +105,8 @@ public class DropDelayHandler {
     }
 
     private static void doDropProgress(MinecraftClient client, ItemStack stack, DropAction dropAction) {
-        if (ModKeyBindings.isDown(client.options.keyDrop)) {
-            ((KeyBindingAccessor) client.options.keyDrop).setTimesPressed(0); // eat all presses!
+        if (ModKeyBindings.isDown(client.options.dropKey)) {
+            ((KeyBindingAccessor) client.options.dropKey).setTimesPressed(0); // eat all presses!
             if (dropDelayCounter < getCounterMax()) {
                 boolean isDropStackDown = ModKeyBindings.isDown(keyDropStack) && stack.getCount() > 1;
                 if (dropDelayCounter == 0)

@@ -32,8 +32,8 @@ public abstract class KeyboardMixin {
             }
 
             KeyBinding targetBinding = null;
-            if (client.options.keyDrop.matchesKey(key, scancode))
-                targetBinding = client.options.keyDrop;
+            if (client.options.dropKey.matchesKey(key, scancode))
+                targetBinding = client.options.dropKey;
             else {
                 for (KeyBinding keyBinding : ModKeyBindings.all) {
                     if (keyBinding.matchesKey(key, scancode)) {

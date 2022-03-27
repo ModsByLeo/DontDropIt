@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '0.10-SNAPSHOT'
+    id 'fabric-loom' version '0.11-SNAPSHOT'
 }
 
 sourceCompatibility = JavaVersion.VERSION_17
@@ -17,6 +17,7 @@ repositories {
     maven { url "https://maven.shedaniel.me/" }
     maven { url "https://maven.terraformersmc.com/" }
     maven { url "https://maven.siphalor.de/" }
+    maven { url "https://maven.quiltmc.org/repository/snapshot/" }
 }
 
 def depImpl(String id, boolean include = false) {
@@ -54,6 +55,7 @@ dependencies {
         exclude group: "de.siphalor", module: "nmuk-1.18"
     })
     depImpl "com.terraformersmc:modmenu:${project.modmenu_version}"
+    depImpl("org.quiltmc.qsl.data:tags:${project.qsl_tags_version}", true)
 }
 
 if (Boolean.valueOf(project.use_runtime_deps)) {
@@ -87,14 +89,8 @@ processResources {
 }
 
 tasks.withType(JavaCompile).configureEach {
-    // ensure that the encoding is set to UTF-8, no matter what the system default is
-    // this fixes some edge cases with special characters not displaying correctly
-    // see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
-    // If Javadoc is generated, this must be specified in that task too.
-    it.options.encoding = "UTF-8"
-
-    // Minecraft 1.17 (21w19a) upwards uses Java 16.
-    it.options.release = 16
+    // Minecraft 1.18 (1.18-pre2) upwards uses Java 17.
+    it.options.release = 17
 }
 
 java {
