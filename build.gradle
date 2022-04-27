@@ -17,7 +17,6 @@ repositories {
     maven { url "https://maven.shedaniel.me/" }
     maven { url "https://maven.terraformersmc.com/" }
     maven { url "https://maven.siphalor.de/" }
-    maven { url "https://maven.quiltmc.org/repository/snapshot/" }
 }
 
 def depImpl(String id, boolean include = false) {
@@ -55,7 +54,6 @@ dependencies {
         exclude group: "de.siphalor", module: "nmuk-1.18"
     })
     depImpl "com.terraformersmc:modmenu:${project.modmenu_version}"
-    depImpl("org.quiltmc.qsl.data:tags:${project.qsl_tags_version}", true)
 }
 
 if (Boolean.valueOf(project.use_runtime_deps)) {

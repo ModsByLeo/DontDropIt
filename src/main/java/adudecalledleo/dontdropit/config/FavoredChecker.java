@@ -15,8 +15,6 @@ import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
-import org.quiltmc.qsl.tag.api.TagRegistry;
-
 public class FavoredChecker {
     private static final HashSet<Item> FAVORED_ITEMS = new HashSet<>();
     private static final HashSet<Enchantment> FAVORED_ENCHANTMENTS = new HashSet<>();
@@ -25,10 +23,14 @@ public class FavoredChecker {
     static void updateFavoredSets(ModConfig config) {
         updateFavoredSet(FAVORED_ITEMS, config.favorites.items, Registry.ITEM::getOrEmpty);
         updateFavoredSet(FAVORED_ENCHANTMENTS, config.favorites.enchantments, Registry.ENCHANTMENT::getOrEmpty);
-        updateFavoredSet(FAVORED_ITEM_TAGS, config.favorites.tags, id -> TagRegistry.stream(Registry.ITEM_KEY)
-                .map(TagRegistry.TagEntry::key)
-                .filter(key -> id.equals(key.id()))
-                .findAny());
+        updateFavoredSet(FAVORED_ITEM_TAGS, config.favorites.tags, id -> {
+            var key = TagKey.of(Registry.ITEM_KEY, id);
+            if (Registry.ITEM.containsTag(key)) {
+                return Optional.of(key);
+            } else {
+                return Optional.empty();
+            }
+        });
     }
 
     private static <T> void updateFavoredSet(HashSet<T> set, List<String> keys, Function<Identifier, Optional<T>> function) {

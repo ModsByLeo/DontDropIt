@@ -1,7 +1,9 @@
 package adudecalledleo.dontdropit.config;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
 
 import adudecalledleo.dontdropit.DontDropIt;
 import me.shedaniel.autoconfig.AutoConfig;
@@ -13,11 +15,10 @@ import me.shedaniel.cloth.clothconfig.shadowed.blue.endless.jankson.annotation.N
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
-
-import org.quiltmc.qsl.tag.api.TagRegistry;
 
 import static adudecalledleo.dontdropit.config.ModConfigLogger.LOGGER;
 
@@ -149,11 +150,6 @@ public class ModConfig implements ConfigData {
         }
 
         private void removeInvalidTagIdsFrom(List<String> list) {
-            // collect all valid item tag IDs
-            Set<Identifier> tagIds = TagRegistry.stream(Registry.ITEM_KEY)
-                    .map(entry -> entry.key().id())
-                    .collect(Collectors.toSet());
-
             Iterator<String> it = list.iterator();
             while (it.hasNext()) {
                 String idStr = it.next();
@@ -163,7 +159,8 @@ public class ModConfig implements ConfigData {
                     it.remove();
                     continue;
                 }
-                if (!tagIds.contains(id)) {
+                var tagKey = TagKey.of(Registry.ITEM_KEY, id);
+                if (!Registry.ITEM.containsTag(tagKey)) {
                     LOGGER.warn("Favorites: Found unregistered identifier \"{}\" in favored tags list, removing", id.toString());
                     it.remove();
                 }
