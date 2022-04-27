@@ -56,8 +56,7 @@
   "text.autoconfig.dontdropit.option.favorites.enchIgnoreInvalidTargets.@Tooltip[0]": "Açık iken, favori büyüye sahip olup da",
   "text.autoconfig.dontdropit.option.favorites.enchIgnoreInvalidTargets.@Tooltip[1]": "söz konusu eşyanın kendisi favori değilse,",
   "text.autoconfig.dontdropit.option.favorites.enchIgnoreInvalidTargets.@Tooltip[2]": "favori olarak işaretlenmeyecek.",
-  "text.autoconfig.dontdropit.option.favorites.tags.@PrefixText": "Eşya Etiketleri",
-  "text.autoconfig.dontdropit.option.favorites.tags": "Eşya Etiket ID'leri",
-  "text.autoconfig.dontdropit.option.favorites.tags.@Tooltip[0]": "Bu etiketlerin herhangi birine sahip eşyalar",
-  "text.autoconfig.dontdropit.option.favorites.tags.@Tooltip[1]": "favori olarak işaretlenecek."
+  "text.autoconfig.dontdropit.option.favorites.itemTags": "Eşya Etiket ID'leri",
+  "text.autoconfig.dontdropit.option.favorites.itemTags.@Tooltip[0]": "Bu etiketlerin herhangi birine sahip eşyalar",
+  "text.autoconfig.dontdropit.option.favorites.itemTags.@Tooltip[1]": "favori olarak işaretlenecek."
 }

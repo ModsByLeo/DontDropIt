@@ -10,6 +10,7 @@ import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
+import me.shedaniel.cloth.clothconfig.shadowed.blue.endless.jankson.Comment;
 import me.shedaniel.cloth.clothconfig.shadowed.blue.endless.jankson.annotation.Nullable;
 
 import net.minecraft.enchantment.Enchantment;
@@ -70,14 +71,20 @@ public class ModConfig implements ConfigData {
         @ConfigEntry.Gui.PrefixText
         @ConfigEntry.Gui.Tooltip
         public List<String> items = null;
+        @ConfigEntry.Gui.Tooltip(count = 2)
+        public List<String> itemTags = null;
         @ConfigEntry.Gui.PrefixText
         @ConfigEntry.Gui.Tooltip
         public List<String> enchantments = null;
+        @ConfigEntry.Gui.Tooltip(count = 2)
+        public List<String> enchantmentTags = null;
         @ConfigEntry.Gui.Tooltip(count = 3)
         public boolean enchIgnoreInvalidTargets = true;
-        @ConfigEntry.Gui.PrefixText
-        @ConfigEntry.Gui.Tooltip(count = 2)
-        public List<String> tags = null;
+
+        @Comment("Deprecated since 2.4.0, replaced with itemTags. The value of this will replace the value of itemTags.")
+        @Deprecated
+        @ConfigEntry.Gui.Excluded
+        private List<String> tags;
 
         private static List<String> getRareItemIds() {
             ArrayList<String> itemIds = new ArrayList<>();
@@ -102,26 +109,34 @@ public class ModConfig implements ConfigData {
 
         void postLoad() {
             items = init(items);
+            if (tags != null) {
+                itemTags = init(tags);
+                tags = null;
+            } else {
+                itemTags = init(itemTags);
+            }
             enchantments = init(enchantments);
-            tags = init(tags);
+            enchantmentTags = init(enchantmentTags);
 
             boolean removeInvalidIds = true;
             if (restoreDefaults == null || restoreDefaults == Boolean.TRUE) {
                 // resets favored ID lists IF:
                 // 1. restoreDefaults was set to true (user wants to reset)
                 // 2. restoreDefaults is null and all lists are currently empty (newly created config)
-                if (restoreDefaults == Boolean.TRUE || (items.isEmpty() && enchantments.isEmpty() && tags.isEmpty())) {
+                if (restoreDefaults == Boolean.TRUE || (items.isEmpty() && itemTags.isEmpty()
+                        && enchantments.isEmpty() && enchantmentTags.isEmpty())) {
                     items = getRareItemIds();
                     enchantments = getEnchantmentIds();
-                    tags.clear();
+                    itemTags.clear();
                     removeInvalidIds = false; // can safely be skipped, since default items/enchantment IDs are always valid
                 }
             }
             restoreDefaults = Boolean.FALSE;
             if (removeInvalidIds) {
                 removeInvalidIdsFrom(items, "items", Registry.ITEM);
+                removeInvalidTagIdsFrom(itemTags, "item", Registry.ITEM);
                 removeInvalidIdsFrom(enchantments, "enchantments", Registry.ENCHANTMENT);
-                removeInvalidTagIdsFrom(tags);
+                removeInvalidTagIdsFrom(enchantmentTags, "enchantment", Registry.ENCHANTMENT);
             }
         }
 
@@ -149,19 +164,19 @@ public class ModConfig implements ConfigData {
             }
         }
 
-        private void removeInvalidTagIdsFrom(List<String> list) {
+        private <T> void removeInvalidTagIdsFrom(List<String> list, String description, Registry<T> registry) {
             Iterator<String> it = list.iterator();
             while (it.hasNext()) {
                 String idStr = it.next();
                 Identifier id = Identifier.tryParse(idStr);
                 if (id == null) {
-                    LOGGER.warn("Favorites: Found invalid identifier \"{}\" in favored tags list, removing", idStr);
+                    LOGGER.warn("Favorites: Found invalid identifier \"{}\" in favored {} tags list, removing", idStr, description);
                     it.remove();
                     continue;
                 }
-                var tagKey = TagKey.of(Registry.ITEM_KEY, id);
-                if (!Registry.ITEM.containsTag(tagKey)) {
-                    LOGGER.warn("Favorites: Found unregistered identifier \"{}\" in favored tags list, removing", id);
+                var tagKey = TagKey.of(registry.getKey(), id);
+                if (!registry.containsTag(tagKey)) {
+                    LOGGER.warn("Favorites: Found unregistered identifier \"{}\" in favored {} tags list, removing", id, description);
                     it.remove();
                 }
             }
