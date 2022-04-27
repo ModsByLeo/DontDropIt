@@ -143,7 +143,7 @@ public class ModConfig implements ConfigData {
                     continue;
                 }
                 if (!registry.containsId(id)) {
-                    LOGGER.warn("Favorites: Found unregistered identifier \"{}\" in favored {} list, removing", id.toString(), listName);
+                    LOGGER.warn("Favorites: Found unregistered identifier \"{}\" in favored {} list, removing", id, listName);
                     it.remove();
                 }
             }
@@ -161,7 +161,7 @@ public class ModConfig implements ConfigData {
                 }
                 var tagKey = TagKey.of(Registry.ITEM_KEY, id);
                 if (!Registry.ITEM.containsTag(tagKey)) {
-                    LOGGER.warn("Favorites: Found unregistered identifier \"{}\" in favored tags list, removing", id.toString());
+                    LOGGER.warn("Favorites: Found unregistered identifier \"{}\" in favored tags list, removing", id);
                     it.remove();
                 }
             }

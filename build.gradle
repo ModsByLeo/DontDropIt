@@ -58,7 +58,13 @@ dependencies {
 
 if (Boolean.valueOf(project.use_runtime_deps)) {
     repositories {
-        maven { url "https://jitpack.io" }
+        maven {
+            name = "JitPack"
+            url = "https://jitpack.io"
+            content {
+                includeGroupByRegex "com\\.github\\..*"
+            }
+        }
         maven {
             name = "Gegy's Maven"
             url = "https://maven.gegy.dev/"
@@ -70,11 +76,11 @@ if (Boolean.valueOf(project.use_runtime_deps)) {
         // This greatly reduces the amount of time needed to start the game, but is generally unsafe in production
         depRuntimeOnly "supercoder79:databreaker:${project.databreaker_version}"
         // JellySquid's elemental optimizations
-        /* (DISABLED BECAUSE JITPACK SUCKS)
-        depRuntime "com.github.jellysquid3:lithium-fabric:${project.lithium_version}"
-        depRuntime "com.github.jellysquid3:phosphor-fabric:${project.phosphor_version}"
-        depRuntime "com.github.jellysquid3:sodium-fabric:${project.sodium_version}"
-         */
+        /*
+        depRuntimeOnly "com.github.CaffeineMC:lithium-fabric:${project.lithium_version}"
+        depRuntimeOnly "com.github.CaffeineMC:phosphor-fabric:${project.phosphor_version}"
+        depRuntimeOnly "com.github.CaffeineMC:sodium-fabric:${project.sodium_version}"
+        */
     }
 }
 
