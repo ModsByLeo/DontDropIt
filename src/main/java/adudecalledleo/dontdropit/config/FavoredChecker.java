@@ -67,17 +67,24 @@ public class FavoredChecker {
             return true;
         Set<Enchantment> enchs = EnchantmentHelper.get(stack).keySet();
         for (Enchantment ench : enchs) {
-            if (!FAVORED_ENCHANTMENTS.contains(ench))
+            boolean matching = FAVORED_ENCHANTMENTS.contains(ench);
+            if (!matching) {
+                final var enchEntry =
+                        Registry.ENCHANTMENT.getEntry(Registry.ENCHANTMENT.getRawId(ench))
+                                .orElseThrow(() -> new RuntimeException("Couldn't get registry entry for " + Registry.ENCHANTMENT.getId(ench)));
+                matching = FAVORED_ENCHANTMENT_TAGS.stream().anyMatch(enchEntry::isIn);
+            }
+            if (!matching) {
                 continue;
-            final var enchEntry =
-                    Registry.ENCHANTMENT.getEntry(Registry.ENCHANTMENT.getRawId(ench))
-                            .orElseThrow(() -> new RuntimeException("Couldn't get registry entry for " + Registry.ENCHANTMENT.getId(ench)));
-            if (FAVORED_ENCHANTMENT_TAGS.stream().noneMatch(enchEntry::isIn))
-                continue;
-            if (config.favorites.enchIgnoreInvalidTargets
-                    && !(stack.getItem() instanceof EnchantedBookItem) && !ench.isAcceptableItem(stack))
-                continue;
-            return true;
+            }
+
+            boolean valid = true;
+            if (config.favorites.enchIgnoreInvalidTargets && !(stack.getItem() instanceof EnchantedBookItem)) {
+                valid = ench.isAcceptableItem(stack);
+            }
+            if (valid) {
+                return true;
+            }
         }
         return false;
     }
