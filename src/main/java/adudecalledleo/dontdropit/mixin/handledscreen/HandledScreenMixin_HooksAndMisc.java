@@ -13,7 +13,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.LiteralTextContent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -30,7 +30,7 @@ public abstract class HandledScreenMixin_HooksAndMisc extends Screen implements 
     @Shadow protected abstract void onMouseClick(Slot slot, int invSlot, int clickData, SlotActionType actionType);
 
     private HandledScreenMixin_HooksAndMisc() {
-        super(LiteralText.EMPTY);
+        super(LiteralTextContent.EMPTY);
         throw new RuntimeException("Mixin constructor called");
     }
 

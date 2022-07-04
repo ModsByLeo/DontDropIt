@@ -19,7 +19,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.LiteralTextContent;
 import net.minecraft.text.Text;
 
 @Mixin(HandledScreen.class)
@@ -29,7 +29,7 @@ public abstract class HandledScreenMixin_InterceptClose<T extends ScreenHandler>
     @Shadow protected abstract void onMouseClick(Slot slot, int slotId, int button, SlotActionType actionType);
 
     private HandledScreenMixin_InterceptClose() {
-        super(LiteralText.EMPTY);
+        super(LiteralTextContent.EMPTY);
         throw new RuntimeException("Mixin constructor called");
     }
 

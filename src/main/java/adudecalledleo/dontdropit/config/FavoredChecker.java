@@ -14,6 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 
 public class FavoredChecker {
     private static final HashSet<Item> FAVORED_ITEMS = new HashSet<>();

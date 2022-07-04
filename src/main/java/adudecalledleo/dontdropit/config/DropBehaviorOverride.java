@@ -6,7 +6,7 @@ import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.util.Formatting;
 import java.util.Collections;
 import java.util.Locale;
@@ -19,7 +19,7 @@ public enum DropBehaviorOverride {
 
     public Text toText() {
         MutableText text =
-                new TranslatableText("text.autoconfig.dontdropit.general.drop_behavior." + this.name().toLowerCase(Locale.ROOT));
+                new TranslatableTextContent("text.autoconfig.dontdropit.general.drop_behavior." + this.name().toLowerCase(Locale.ROOT));
         if (this == DISABLED)
             text = text.styled(style -> style.withColor(Formatting.RED));
         return text;
@@ -32,7 +32,7 @@ public enum DropBehaviorOverride {
         AutoConfig.getGuiRegistry(configClass).registerTypeProvider((i13n, field, config, defaults, registry) ->
                 Collections.singletonList(
                     entryBuilder.startSelector(
-                            new TranslatableText(i13n),
+                            new TranslatableTextContent(i13n),
                                     VALUES,
                                     getUnsafely(field, config, getUnsafely(field, defaults)))
                             .setDefaultValue(() -> getUnsafely(field, defaults))
