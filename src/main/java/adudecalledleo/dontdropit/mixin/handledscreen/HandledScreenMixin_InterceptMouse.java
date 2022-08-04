@@ -1,5 +1,7 @@
 package adudecalledleo.dontdropit.mixin.handledscreen;
 
+import java.util.ArrayList;
+
 import adudecalledleo.dontdropit.ModKeyBindings;
 import adudecalledleo.dontdropit.config.DropBehaviorOverride;
 import adudecalledleo.dontdropit.config.FavoredChecker;
@@ -21,12 +23,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
-import net.minecraft.text.LiteralTextContent;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
-import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.util.Formatting;
-import java.util.ArrayList;
 
 import static adudecalledleo.dontdropit.ModKeyBindings.keyForceDrop;
 
@@ -40,7 +39,7 @@ public abstract class HandledScreenMixin_InterceptMouse<T extends ScreenHandler>
     @Shadow protected abstract boolean isClickOutsideBounds(double mouseX, double mouseY, int left, int top, int button);
 
     private HandledScreenMixin_InterceptMouse() {
-        super(LiteralTextContent.EMPTY);
+        super(Text.empty());
         throw new RuntimeException("Mixin constructor called");
     }
 
@@ -143,24 +142,25 @@ public abstract class HandledScreenMixin_InterceptMouse<T extends ScreenHandler>
             break;
         }
         if (forceDrop || canDrop) {
-            tooltipTexts.add(new TranslatableTextContent("dontdropit.tooltip.drop.allowed")
+            tooltipTexts.add(Text.translatable("dontdropit.tooltip.drop.allowed")
                     .styled(style -> style.withBold(true).withBold(true).withColor(Formatting.GREEN)));
-            if (!canDrop)
-                tooltipTexts.add(new TranslatableTextContent("dontdropit.tooltip.drop.allowed.unblock_hint")
+            if (!canDrop) {
+                tooltipTexts.add(Text.translatable("dontdropit.tooltip.drop.allowed.unblock_hint")
                         .styled(style -> style.withItalic(true).withColor(Formatting.GRAY)));
+            }
         } else {
-            tooltipTexts.add(new TranslatableTextContent("dontdropit.tooltip.drop.blocked")
+            tooltipTexts.add(Text.translatable("dontdropit.tooltip.drop.blocked")
                     .styled(style -> style.withBold(true).withColor(Formatting.RED)));
             if (keyForceDrop.isUnbound()) {
-                tooltipTexts.add(new TranslatableTextContent("dontdropit.tooltip.drop.unblock_hint.unbound[0]",
-                        Texts.bracketed(new TranslatableTextContent(keyForceDrop.getTranslationKey())
+                tooltipTexts.add(Text.translatable("dontdropit.tooltip.drop.unblock_hint.unbound[0]",
+                        Texts.bracketed(Text.translatable(keyForceDrop.getTranslationKey())
                                 .styled(style -> style.withBold(true).withColor(Formatting.WHITE))))
                         .styled(style -> style.withColor(Formatting.GRAY)));
-                tooltipTexts.add(new TranslatableTextContent("dontdropit.tooltip.drop.unblock_hint.unbound[1]")
+                tooltipTexts.add(Text.translatable("dontdropit.tooltip.drop.unblock_hint.unbound[1]")
                         .styled(style -> style.withColor(Formatting.GRAY)));
             } else
-                tooltipTexts.add(new TranslatableTextContent("dontdropit.tooltip.drop.unblock_hint",
-                        Texts.bracketed(new TranslatableTextContent(keyForceDrop.getBoundKeyTranslationKey())
+                tooltipTexts.add(Text.translatable("dontdropit.tooltip.drop.unblock_hint",
+                        Texts.bracketed(Text.translatable(keyForceDrop.getBoundKeyTranslationKey())
                                 .styled(style -> style.withBold(true).withColor(Formatting.WHITE))))
                         .styled(style -> style.withColor(Formatting.GRAY)));
         }

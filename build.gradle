@@ -1,5 +1,6 @@
 plugins {
     id 'fabric-loom' version '0.12-SNAPSHOT'
+    id 'io.github.juuxel.loom-quiltflower' version '1.7.1'
 }
 
 sourceCompatibility = JavaVersion.VERSION_17
@@ -63,6 +64,13 @@ if (Boolean.valueOf(project.use_runtime_deps)) {
             }
         }
         maven {
+            name = "Modrinth Maven"
+            url = "https://api.modrinth.com/maven"
+            content {
+                includeGroupByRegex "maven\\.modrinth"
+            }
+        }
+        maven {
             name = "Gegy's Maven"
             url = "https://maven.gegy.dev/"
         }
@@ -72,12 +80,11 @@ if (Boolean.valueOf(project.use_runtime_deps)) {
         // DataBreaker applies a number of patches to eliminate the loading of data fixers
         // This greatly reduces the amount of time needed to start the game, but is generally unsafe in production
         depRuntimeOnly "supercoder79:databreaker:${project.databreaker_version}"
-        // JellySquid's elemental optimizations
-        /*
-        depRuntimeOnly "com.github.CaffeineMC:lithium-fabric:${project.lithium_version}"
-        depRuntimeOnly "com.github.CaffeineMC:phosphor-fabric:${project.phosphor_version}"
-        depRuntimeOnly "com.github.CaffeineMC:sodium-fabric:${project.sodium_version}"
-        */
+        // JellySquid's elemental optimizations (and Starlight)
+		depRuntimeOnly "maven.modrinth:lithium:${project.lithium_version}"
+		depRuntimeOnly "maven.modrinth:starlight:${project.starlight_version}"
+        depRuntimeOnly "maven.modrinth:sodium:${project.sodium_version}"
+        depRuntimeOnly 'org.joml:joml:1.10.4' // needed for Sodium
     }
 }
 

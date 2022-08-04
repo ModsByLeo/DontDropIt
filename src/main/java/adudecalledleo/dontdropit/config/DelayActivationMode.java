@@ -1,17 +1,15 @@
 package adudecalledleo.dontdropit.config;
 
+import java.util.Collections;
+import java.util.Locale;
+
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.util.Formatting;
-
-import java.util.Collections;
-import java.util.Locale;
 
 import static me.shedaniel.autoconfig.util.Utils.getUnsafely;
 import static me.shedaniel.autoconfig.util.Utils.setUnsafely;
@@ -28,10 +26,12 @@ public enum DelayActivationMode {
     }
 
     public Text toText() {
-        MutableText text =
-                new TranslatableTextContent("text.autoconfig.dontdropit.general.delayed_drop." + this.name().toLowerCase(Locale.ROOT));
-        if (this == DISABLED)
+        var text =
+                Text.translatable("text.autoconfig.dontdropit.general.delayed_drop."
+                        + this.name().toLowerCase(Locale.ROOT));
+        if (this == DISABLED) {
             text = text.styled(style -> style.withColor(Formatting.RED));
+        }
         return text;
     }
 
@@ -42,7 +42,7 @@ public enum DelayActivationMode {
         AutoConfig.getGuiRegistry(configClass).registerTypeProvider((i13n, field, config, defaults, registry) ->
                 Collections.singletonList(
                         entryBuilder.startSelector(
-                                new TranslatableTextContent(i13n),
+                                Text.translatable(i13n),
                                         VALUES,
                                         getUnsafely(field, config, getUnsafely(field, defaults)))
                                 .setDefaultValue(() -> getUnsafely(field, defaults))
