@@ -65,10 +65,10 @@ public class ModConfig implements ConfigData {
         public boolean drawOverlay = true;
         @ConfigEntry.Gui.PrefixText
         @ConfigEntry.Gui.Tooltip
-        public List<String> items = getRareItemIds();
+        public List<String> items;
         @ConfigEntry.Gui.PrefixText
         @ConfigEntry.Gui.Tooltip
-        public List<String> enchantments = getEnchantmentIds();
+        public List<String> enchantments;
         @ConfigEntry.Gui.Tooltip(count = 3)
         public boolean enchIgnoreInvalidTargets = true;
         @ConfigEntry.Gui.PrefixText
@@ -97,6 +97,10 @@ public class ModConfig implements ConfigData {
         }
 
         void postLoad() {
+            if(items == null)
+                items =  getRareItemIds();
+            if(enchantments == null)
+                enchantments = getEnchantmentIds();
             items = init(items);
             enchantments = init(enchantments);
             tags = init(tags);
