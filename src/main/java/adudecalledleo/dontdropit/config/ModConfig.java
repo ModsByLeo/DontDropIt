@@ -11,7 +11,6 @@ import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import me.shedaniel.cloth.clothconfig.shadowed.blue.endless.jankson.Comment;
-import me.shedaniel.cloth.clothconfig.shadowed.blue.endless.jankson.annotation.Nullable;
 
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.Item;
@@ -46,13 +45,26 @@ public class ModConfig implements ConfigData {
 
     public static class DropDelay {
         @ConfigEntry.Gui.Tooltip(count = 3)
-        @Nullable
         public DelayActivationMode mode = DelayActivationMode.ENABLED;
+        @ConfigEntry.Gui.Tooltip(count = 4)
+        public boolean disabled = false;
         @ConfigEntry.BoundedDiscrete(max = 200, min = 1)
         @ConfigEntry.Gui.Tooltip(count = 3)
         public long ticks = 10;
         @ConfigEntry.Gui.Tooltip(count = 3)
         public boolean doDelayOnce = false;
+
+        public boolean isEnabled(ItemStack stack) {
+            if (disabled) {
+                return false;
+            } else {
+                return mode.isEnabled(stack);
+            }
+        }
+
+        void postLoad() {
+            disabled = false;
+        }
     }
 
     @ConfigEntry.Category("drop_delay")
@@ -107,7 +119,7 @@ public class ModConfig implements ConfigData {
             return enchIds;
         }
 
-        void postLoad() {
+        void postUpdate() {
             items = init(items);
             if (tags != null) {
                 itemTags = init(tags);
@@ -201,11 +213,13 @@ public class ModConfig implements ConfigData {
             LOGGER.warn("Favorites section is missing, resetting it to default values");
             favorites = new Favorites();
         }
+
+        dropDelay.postLoad();
         postUpdate();
     }
 
     public void postUpdate() {
-        favorites.postLoad();
+        favorites.postUpdate();
         FavoredChecker.updateFavoredSets(this);
     }
 }

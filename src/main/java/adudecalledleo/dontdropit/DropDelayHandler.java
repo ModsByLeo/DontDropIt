@@ -1,5 +1,8 @@
 package adudecalledleo.dontdropit;
 
+import static adudecalledleo.dontdropit.ModKeyBindings.keyDropStack;
+import static adudecalledleo.dontdropit.ModKeyBindings.keyToggleDropDelay;
+
 import adudecalledleo.dontdropit.config.DelayActivationMode;
 import adudecalledleo.dontdropit.config.FavoredChecker;
 import adudecalledleo.dontdropit.config.ModConfig;
@@ -10,15 +13,11 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 
-import static adudecalledleo.dontdropit.ModKeyBindings.keyDropStack;
-import static adudecalledleo.dontdropit.ModKeyBindings.keyToggleDropDelay;
-
 public class DropDelayHandler {
     private static long dropDelayCounter;
     private static ItemStack currentStack;
     private static boolean wasDropStackDown;
     private static boolean wasToggleDelayDown = false;
-    private static DelayActivationMode originalDelayActivationMode = null;
 
     public static void reset() {
         dropDelayCounter = 0;
@@ -39,15 +38,9 @@ public class DropDelayHandler {
         if (ModKeyBindings.isDown(keyToggleDropDelay)) {
             if (!wasToggleDelayDown) {
                 wasToggleDelayDown = true;
-                ModConfig config = ModConfig.get();
-                if (originalDelayActivationMode == null) {
-                    originalDelayActivationMode = config.dropDelay.mode;
-                    config.dropDelay.mode = DelayActivationMode.DISABLED;
-                } else {
-                    config.dropDelay.mode = originalDelayActivationMode;
-                    originalDelayActivationMode = null;
-                }
-                ModConfig.save();
+                var dropDelay = ModConfig.get().dropDelay;
+                dropDelay.disabled = !dropDelay.disabled;
+                DontDropItToast.showDropDelayDisabledToggled(client.getToastManager(), dropDelay.disabled);
             }
         } else
             wasToggleDelayDown = false;
@@ -64,7 +57,7 @@ public class DropDelayHandler {
         if (client.player == null)
             return;
         ItemStack stack = client.player.getInventory().getMainHandStack();
-        if (ModConfig.get().dropDelay.mode.isEnabled(stack)) {
+        if (ModConfig.get().dropDelay.isEnabled(stack)) {
             if (client.player.isSpectator()) {
                 reset();
                 return;

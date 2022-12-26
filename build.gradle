@@ -1,5 +1,6 @@
 plugins {
     id 'fabric-loom' version '0.12-SNAPSHOT'
+    id 'io.github.juuxel.loom-quiltflower' version '1.7.1'
 }
 
 sourceCompatibility = JavaVersion.VERSION_17
@@ -17,6 +18,21 @@ repositories {
     maven { url "https://maven.shedaniel.me/" }
     maven { url "https://maven.terraformersmc.com/" }
     maven { url "https://maven.siphalor.de/" }
+
+    maven {
+        name = "Modrinth Maven"
+        url = "https://api.modrinth.com/maven"
+        content {
+            includeGroupByRegex "maven\\.modrinth"
+        }
+    }
+    maven {
+        name = "JitPack"
+        url = "https://jitpack.io"
+        content {
+            includeGroupByRegex "com\\.github\\..*"
+        }
+    }
 }
 
 def depImpl(String id, boolean include = false) {
@@ -49,19 +65,15 @@ dependencies {
     // PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
     // You may need to force-disable transitiveness on them.
     depImpl("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}", true)
-    include(modImplementation("de.siphalor:amecsapi-1.19:1+"))
+    include(modImplementation("de.siphalor:amecsapi-1.19:1+") {
+        exclude module: 'lazydfu'
+    })
     depImpl "com.terraformersmc:modmenu:${project.modmenu_version}"
 }
 
 if (Boolean.valueOf(project.use_runtime_deps)) {
     repositories {
-        maven {
-            name = "JitPack"
-            url = "https://jitpack.io"
-            content {
-                includeGroupByRegex "com\\.github\\..*"
-            }
-        }
+        // for DataBreaker
         maven {
             name = "Gegy's Maven"
             url = "https://maven.gegy.dev/"
@@ -71,13 +83,12 @@ if (Boolean.valueOf(project.use_runtime_deps)) {
     dependencies {
         // DataBreaker applies a number of patches to eliminate the loading of data fixers
         // This greatly reduces the amount of time needed to start the game, but is generally unsafe in production
-        depRuntimeOnly "supercoder79:databreaker:${project.databreaker_version}"
-        // JellySquid's elemental optimizations
-        /*
-        depRuntimeOnly "com.github.CaffeineMC:lithium-fabric:${project.lithium_version}"
-        depRuntimeOnly "com.github.CaffeineMC:phosphor-fabric:${project.phosphor_version}"
-        depRuntimeOnly "com.github.CaffeineMC:sodium-fabric:${project.sodium_version}"
-        */
+        modRuntimeOnly "supercoder79:databreaker:${project.databreaker_version}"
+        // JellySquid's elemental optimizations (and Starlight)
+        modRuntimeOnly "maven.modrinth:lithium:${project.lithium_version}"
+        modRuntimeOnly "maven.modrinth:phosphor:${project.phosphor_version}"
+        modRuntimeOnly "maven.modrinth:sodium:${project.sodium_version}"
+        runtimeOnly 'org.joml:joml:1.10.4' // needed for Sodium
     }
 }
 
